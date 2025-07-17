@@ -4,11 +4,9 @@
     <div class="navbar-left">
       <span class="logo">ScholarLens</span>
       <ul class="nav-menu">
-        <li :class="{active: activeMenu==='home'}" @click="go('/')">Home</li>
-        <li :class="{active: activeMenu==='mypapers'}" @click="go('/mypapers')">My Papers</li>
+        <li :class="{active: activeMenu==='feed'}" @click="go('/feed')">Public Feed</li>
         <li :class="{active: activeMenu==='myanalyses'}" @click="go('/my-analyses')">My Analyses</li>
         <li :class="{active: activeMenu==='myanalysestask'}" @click="go('/my-analyses-task')">My Analyses Task</li>
-        <li :class="{active: activeMenu==='explore'}" @click="go('/')">Explore</li>
       </ul>
     </div>
     <!-- 搜索框 -->
@@ -36,11 +34,10 @@ const route = useRoute()
 
 // 当前激活菜单
 const activeMenu = computed(() => {
-  if (route.path.startsWith('/mypapers')) return 'mypapers'
+  if (route.path.startsWith('/feed')) return 'feed'
   if (route.path.startsWith('/my-analyses-task')) return 'myanalysestask'
   if (route.path.startsWith('/my-analyses')) return 'myanalyses'
-  if (route.path === '/' || route.path.startsWith('/explore')) return 'explore'
-  return 'home'
+  return ''
 })
 
 // 搜索框内容
