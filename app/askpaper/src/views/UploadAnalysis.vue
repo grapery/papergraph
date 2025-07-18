@@ -18,17 +18,34 @@
 <script setup>
 import { ref } from 'vue'
 import TopTabs from '../components/TopTabs.vue'
-import { uploadPaper, startAnalysis } from '../api/analysis'
+import { uploadPaper, startAnalysisById } from '../api/analysis'
 const showDialog = ref(false)
 const file = ref(null)
-function onFileChange(e) { file.value = e.target.files[0] }
+// 保存上传后返回的 paper 信息
+const uploadedPaper = ref(null)
+
+function onFileChange(e) { 
+  file.value = e.target.files[0] 
+  uploadedPaper.value = null // 选择新文件时清空已上传信息
+}
+
+// 上传文件，只保存 paper 信息
 function upload() {
   if (!file.value) return alert('请选择文件')
-  uploadPaper(file.value).then(() => alert('上传成功'))
+  uploadPaper(file.value)
+    .then(({ paper }) => {
+      uploadedPaper.value = paper
+      alert('上传成功')
+    })
+    .catch(err => alert(err.message))
 }
+
+// 只用已上传的 paper.ID 发起分析
 function analyze() {
-  if (!file.value) return alert('请选择文件')
-  startAnalysis(file.value).then(() => alert('分析已发起'))
+  if (!uploadedPaper.value || !uploadedPaper.value.ID) return alert('请先上传文件')
+  startAnalysisById(uploadedPaper.value.ID)
+    .then(() => alert('分析已发起'))
+    .catch(err => alert(err.message))
 }
 </script>
 <style scoped>

@@ -37,7 +37,8 @@ func GoogleCallbackHandler(c *gin.Context) {
 	config.Logger.Info("Google回调请求", zap.String("code", code), zap.String("client_ip", c.ClientIP()))
 	if code == "" {
 		config.Logger.Warn("Google回调缺少code参数", zap.String("client_ip", c.ClientIP()))
-		utils.Error(c, "code参数缺失", 400)
+		// 重定向到前端错误页面
+		c.Redirect(http.StatusFound, "/feed?error=missing_code")
 		return
 	}
 	googleCfg := config.GoogleOAuthConfig{
@@ -49,15 +50,21 @@ func GoogleCallbackHandler(c *gin.Context) {
 	user, err := oauthService.HandleCallback(context.Background(), code)
 	if err != nil {
 		config.Logger.Error("Google回调处理失败", zap.Error(err), zap.String("client_ip", c.ClientIP()))
-		utils.Error(c, err.Error(), 500)
+		// 重定向到前端错误页面
+		c.Redirect(http.StatusFound, "/feed?error=auth_failed")
 		return
 	}
 	token, err := utils.GenerateToken(user.ID, user.Gmail)
 	if err != nil {
 		config.Logger.Error("JWT生成失败", zap.Error(err), zap.String("client_ip", c.ClientIP()))
-		utils.Error(c, "生成JWT失败", 500)
+		// 重定向到前端错误页面
+		c.Redirect(http.StatusFound, "/feed?error=token_generation_failed")
 		return
 	}
 	config.Logger.Info("Google登录成功", zap.Uint("user_id", user.ID), zap.String("gmail", user.Gmail), zap.String("client_ip", c.ClientIP()))
-	utils.Success(c, gin.H{"token": token, "user": user})
+
+	// 重定向到前端页面，携带 token 和用户信息
+	// 注意：这里简化处理，实际项目中可能需要更安全的 token 传递方式
+	frontendURL := "/feed?token=" + token + "&login_success=true"
+	c.Redirect(http.StatusFound, frontendURL)
 }

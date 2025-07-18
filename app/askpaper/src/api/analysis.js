@@ -34,6 +34,21 @@ export function startAnalysis(file) {
   })
 }
 
+/**
+ * 只用文件ID发起分析任务
+ * @param {number|string} fileId 文件ID
+ * @returns {Promise<any>} 分析任务结果
+ */
+export function startAnalysisById(fileId) {
+  return axios.post('/api/start_analysis', { file_id: fileId }).then(res => {
+    if (res.data && res.data.code === 0 && res.data.data) {
+      return res.data.data
+    } else {
+      throw new Error(res.data && res.data.msg ? res.data.msg : '分析发起失败')
+    }
+  })
+}
+
 // 获取用户所有分析任务
 export function getUserTasks() {
   // 返回任务列表

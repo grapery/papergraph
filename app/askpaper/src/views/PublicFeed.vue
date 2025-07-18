@@ -5,21 +5,52 @@
       <h1 class="explore-title">Explore Analyses</h1>
       <div class="explore-desc">Discover insights from the community's paper analyses.</div>
     </div>
+    <!-- 搜索框 -->
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="Search analyses by title, author, or keywords" v-model="searchText" />
+    </div>
     <!-- Tab 切换 -->
-    <ExploreTabs :activeTab="activeTab" @update:activeTab="activeTab = $event" />
+    <div class="explore-tabs">
+      <div
+        v-for="tab in tabs"
+        :key="tab.key"
+        :class="['tab-item', { active: activeTab === tab.key }]"
+        @click="activeTab = tab.key"
+      >
+        <span class="tab-icon">{{ tab.icon }}</span>
+        <span>{{ tab.label }}</span>
+      </div>
+    </div>
+    <div class="tab-divider"></div>
     <!-- 分析卡片列表 -->
     <div v-if="feedList.length === 0" class="empty">暂无公开分析</div>
-    <div v-else>
-      <FeedCard v-for="item in feedList" :key="item.id" :item="item" />
+    <div v-else class="feed-list">
+      <div v-for="item in feedList" :key="item.id" class="feed-card">
+        <!-- 左侧内容 -->
+        <div class="feed-card-content">
+          <div class="feed-card-title">{{ item.title }}</div>
+          <div class="feed-card-summary">{{ item.summary }}</div>
+          <button class="view-btn">View Analysis</button>
+        </div>
+        <!-- 右侧图片 -->
+        <div class="feed-card-img">
+          <img :src="item.image" alt="analysis cover" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script setup>
 // 声明类型
 import { ref, computed } from 'vue'
-import ExploreTabs from '../components/TopTabs.vue'
-import FeedCard from '../components/FeedCard.vue'
-
+// Tab 配置
+const tabs = [
+  { key: 'latest', label: 'Latest', icon: '🕒' },
+  { key: 'liked', label: 'Most Liked', icon: '👍' },
+  { key: 'suggested', label: 'Most Suggested', icon: '💡' }
+]
+const activeTab = ref('latest')
+const searchText = ref('')
 // 静态模拟数据，后续可替换为接口数据
 const allFeeds = [
   {
@@ -53,12 +84,14 @@ const allFeeds = [
     image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=400&q=80'
   }
 ]
-// Tab 状态
-const activeTab = ref('latest')
-// 根据 tab 过滤数据（此处全部返回静态数据，后续可扩展）
+// 根据 tab 和搜索过滤数据
 const feedList = computed(() => {
-  // 可根据 activeTab 返回不同排序/筛选
-  return allFeeds
+  // 可根据 activeTab 返回不同排序/筛选，这里只做搜索过滤
+  if (!searchText.value) return allFeeds
+  return allFeeds.filter(item =>
+    item.title.toLowerCase().includes(searchText.value.toLowerCase()) ||
+    item.summary.toLowerCase().includes(searchText.value.toLowerCase())
+  )
 })
 </script>
 <style scoped>
@@ -79,7 +112,117 @@ const feedList = computed(() => {
 .explore-desc {
   color: #6b7280;
   font-size: 1.08rem;
+  margin-bottom: 18px;
+}
+.search-bar {
+  margin-bottom: 18px;
+}
+.search-input {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 16px;
+  background: #e9eef6;
+  font-size: 1.08rem;
+  outline: none;
+  color: #222;
+  box-sizing: border-box;
+}
+.explore-tabs {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 0;
+  padding-left: 2px;
+}
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 1.08rem;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0 2px 8px 2px;
+  border-bottom: 2.5px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.tab-item.active {
+  color: #222;
+  border-bottom: 2.5px solid #2563eb;
+  font-weight: 700;
+}
+.tab-icon {
+  font-size: 1.18rem;
+}
+.tab-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 0 0 18px 0;
+}
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.feed-card {
+  display: flex;
+  align-items: stretch;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px 0 #f3f4f6;
+  padding: 28px 32px;
+  gap: 28px;
+  min-height: 120px;
+}
+.feed-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.feed-card-title {
+  font-size: 1.13rem;
+  font-weight: bold;
   margin-bottom: 8px;
+  color: #222;
+}
+.feed-card-summary {
+  color: #6b7280;
+  font-size: 1.01rem;
+  margin-bottom: 18px;
+}
+.view-btn {
+  width: 140px;
+  background: #f3f4f6;
+  color: #222;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.view-btn:hover {
+  background: #e5e7eb;
+}
+.feed-card-img {
+  flex-shrink: 0;
+  width: 120px;
+  height: 100px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.feed-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
 }
 .empty {
   color: #888;

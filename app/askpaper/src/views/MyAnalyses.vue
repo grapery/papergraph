@@ -5,6 +5,7 @@
       <table class="analyses-table">
         <thead>
           <tr>
+            <th></th>
             <th>Paper Title</th>
             <th>Upload Date</th>
             <th>Analysis Summary</th>
@@ -13,10 +14,16 @@
         </thead>
         <tbody>
           <tr v-for="item in analyses" :key="item.id">
+            <!-- 图标列，可用 emoji 或 SVG 占位 -->
+            <td class="icon-cell">
+              <span class="icon" :style="{ background: iconBg(item.id) }">{{ iconEmoji(item.id) }}</span>
+            </td>
             <td>{{ item.title }}</td>
             <td class="date">{{ item.date }}</td>
             <td class="summary">{{ item.summary }}</td>
-            <td class="actions"><a href="#" class="details-link">View Details</a></td>
+            <td class="actions">
+              <a class="details-link" @click.prevent="viewDetails(item.id)">View Details</a>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -26,6 +33,8 @@
 <script setup>
 // 声明类型
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 // 静态模拟数据，后续可替换为接口数据
 const analyses = ref([
   {
@@ -59,6 +68,20 @@ const analyses = ref([
     summary: 'This review article provides an overview of quantum computing, discussing its potential to revolutionize fields like cryptography and drug discovery.'
   }
 ])
+// 图标 emoji 占位，后续可替换 SVG
+function iconEmoji(id) {
+  const icons = ['📄', '📕', '📗', '📘', '📑']
+  return icons[(id - 1) % icons.length]
+}
+// 图标背景色
+function iconBg(id) {
+  const bgs = ['#e0ece6', '#ffe5db', '#dbeafe', '#e0e7ef', '#e7f5e6']
+  return bgs[(id - 1) % bgs.length]
+}
+// 跳转到分析详情页
+function viewDetails(id) {
+  router.push(`/paper-report/${id}`)
+}
 </script>
 <style scoped>
 .my-analyses-page {
@@ -76,12 +99,13 @@ const analyses = ref([
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 2px 8px 0 #f3f4f6;
-  padding: 0 0 0 0;
+  padding: 0;
   overflow-x: auto;
 }
 .analyses-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 1.04rem;
 }
 .analyses-table th, .analyses-table td {
@@ -98,6 +122,21 @@ const analyses = ref([
 }
 .analyses-table tr:last-child td {
   border-bottom: none;
+}
+.icon-cell {
+  width: 56px;
+  text-align: center;
+}
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  background: #e0ece6;
+  margin-right: 0;
 }
 .date {
   color: #2563eb;

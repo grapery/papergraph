@@ -6,6 +6,7 @@ import ActiveTasks from '../views/ActiveTasks.vue'
 import Account from '../views/Account.vue'
 import MyAnalyses from '../views/MyAnalyses.vue'
 import MyAnalysesTask from '../views/MyAnalysesTask.vue'
+import PaperReport from '../views/PaperReport.vue'
 
 const routes = [
   { path: '/', redirect: '/feed' },
@@ -15,7 +16,8 @@ const routes = [
   { path: '/active', component: ActiveTasks },
   { path: '/account', component: Account },
   { path: '/my-analyses', component: MyAnalyses },
-  { path: '/my-analyses-task', component: MyAnalysesTask }
+  { path: '/my-analyses-task', component: MyAnalysesTask },
+  { path: '/paper-report/:taskId', component: PaperReport }
 ]
 
 export default createRouter({

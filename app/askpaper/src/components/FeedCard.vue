@@ -8,18 +8,28 @@
     <div class="feed-card-content">
       <h3 class="feed-card-title">{{ item.title }}</h3>
       <p class="feed-card-summary">{{ item.summary }}</p>
-      <button class="view-btn">View Analysis</button>
+      <!-- 跳转按钮 -->
+      <button class="view-btn" @click="viewAnalysis">View Analysis</button>
     </div>
   </div>
 </template>
 <script setup>
 // 声明类型
+import { useRouter } from 'vue-router'
 const props = defineProps({
   item: {
     type: Object,
     required: true
   }
 })
+const router = useRouter()
+/**
+ * 跳转到分析详情页，携带任务ID
+ */
+function viewAnalysis() {
+  // 假设 item.id 为任务ID
+  router.push({ path: `/paper-report/${props.item.id}` })
+}
 </script>
 <style scoped>
 .feed-card {
