@@ -27,9 +27,11 @@
       <!-- 基本信息 -->
       <div class="section-title" style="margin-top:32px;">Basic Information</div>
       <table class="info-table">
-        <tr><td>Title</td><td>Paper Title</td></tr>
-        <tr><td>Author</td><td>Dr. Evelyn Reed</td></tr>
-        <tr><td>Publication Date</td><td>July 26, 2024</td></tr>
+        <tbody>
+          <tr><td>Title</td><td>Paper Title</td></tr>
+          <tr><td>Author</td><td>Dr. Evelyn Reed</td></tr>
+          <tr><td>Publication Date</td><td>July 26, 2024</td></tr>
+        </tbody>
       </table>
 
       <!-- 摘要 -->

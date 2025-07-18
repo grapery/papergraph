@@ -1,11 +1,11 @@
-import axios from 'axios'
+import api from './axios'
 
 // 上传PDF，返回 {paper, task}
 export function uploadPaper(file) {
   const formData = new FormData()
   formData.append('file', file)
   // 按文档，响应结构为 { code, msg, data: { paper, task } }
-  return axios.post('/api/upload', formData).then(res => {
+  return api.post('/api/upload', formData).then(res => {
     if (res.data && res.data.code === 0 && res.data.data) {
       return {
         paper: res.data.data.paper,
@@ -28,7 +28,7 @@ export function startAnalysis(file) {
     // 否则兼容老流程
     const fileId = paper && paper.ID
     if (fileId) {
-      return axios.post('/api/start_analysis', { file_id: fileId })
+      return api.post('/api/start_analysis', { file_id: fileId })
     }
     throw new Error('未获取到文件ID')
   })
@@ -40,7 +40,7 @@ export function startAnalysis(file) {
  * @returns {Promise<any>} 分析任务结果
  */
 export function startAnalysisById(fileId) {
-  return axios.post('/api/start_analysis', { file_id: fileId }).then(res => {
+  return api.post('/api/start_analysis', { file_id: fileId }).then(res => {
     if (res.data && res.data.code === 0 && res.data.data) {
       return res.data.data
     } else {
@@ -52,13 +52,13 @@ export function startAnalysisById(fileId) {
 // 获取用户所有分析任务
 export function getUserTasks() {
   // 返回任务列表
-  return axios.get('/api/tasks').then(res => res.data)
+  return api.get('/api/tasks').then(res => res.data)
 }
 
 // 获取用户活跃任务
 export function getUserActiveTasks() {
   // 返回活跃任务列表
-  return axios.get('/api/active_tasks').then(res => res.data)
+  return api.get('/api/active_tasks').then(res => res.data)
 }
 
 /**
@@ -76,7 +76,7 @@ export function getUserActiveTasks() {
  * @returns {Promise<TaskDetail>} 任务详情对象
  */
 export function getTaskDetail(task_id) {
-  return axios.get('/api/task_detail', { params: { task_id } }).then(res => {
+  return api.get('/api/task_detail', { params: { task_id } }).then(res => {
     if (res.data && res.data.code === 0 && res.data.data) {
       return res.data.data
     } else {
@@ -101,7 +101,7 @@ export function getTaskDetail(task_id) {
  * @returns {Promise<AnalysisResult>} 分析结果对象
  */
 export function getAnalysisResult(task_id) {
-  return axios.get('/api/analysis_result', { params: { task_id } }).then(res => {
+  return api.get('/api/analysis_result', { params: { task_id } }).then(res => {
     if (res.data && res.data.code === 0 && res.data.data) {
       return res.data.data
     } else {
@@ -112,7 +112,7 @@ export function getAnalysisResult(task_id) {
 
 /**
  * @typedef {Object} SetTaskPublicStatusResult
- * @property {string} message - 设置结果信息（如“设置成功”）
+ * @property {string} message - 设置结果信息（如"设置成功"）
  */
 
 /**
@@ -123,7 +123,7 @@ export function getAnalysisResult(task_id) {
  */
 export function setTaskPublicStatus(task_id, is_public) {
   // 传入任务ID和公开状态
-  return axios.post('/api/set_public', { task_id, is_public }).then(res => {
+  return api.post('/api/set_public', { task_id, is_public }).then(res => {
     if (res.data && res.data.code === 0 && res.data.data && res.data.data.message) {
       return res.data.data
     } else {
@@ -135,11 +135,11 @@ export function setTaskPublicStatus(task_id, is_public) {
 // 获取评论
 export function getComments(task_id) {
   // 传入任务ID，返回评论列表
-  return axios.get('/api/comments', { params: { task_id } }).then(res => res.data)
+  return api.get('/api/comments', { params: { task_id } }).then(res => res.data)
 }
 
 // 新增评论
 export function addComment(task_id, content) {
   // 传入任务ID和评论内容
-  return axios.post('/api/comment', { task_id, content })
+  return api.post('/api/comment', { task_id, content })
 } 

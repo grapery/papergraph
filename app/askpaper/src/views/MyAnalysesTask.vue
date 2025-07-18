@@ -36,8 +36,9 @@
   </div>
 </template>
 <script setup>
+// 声明类型
 import { ref, onMounted } from 'vue'
-import { getMe, googleLogin } from '../api/auth'
+import { getCurrentUser } from '../api/auth'
 import { getUserActiveTasks, uploadPaper, startAnalysis } from '../api/analysis'
 
 // 用户信息
@@ -50,14 +51,42 @@ const fileInput = ref(null)
 // 页面加载时获取用户信息和任务
 onMounted(async () => {
   try {
-    user.value = await getMe()
-  } catch {
-    // 未登录，跳转google登录
-    googleLogin()
+    user.value = await getCurrentUser()
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
+    // 未登录，跳转到 Google 登录
+    redirectToGoogleLogin()
     return
   }
   await refreshTasks()
 })
+
+// 跳转到 Google 登录
+function redirectToGoogleLogin() {
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID'
+  const redirectUri = encodeURIComponent(`${window.location.origin}/auth/google/callback`)
+  const scope = encodeURIComponent('openid email profile')
+  const responseType = 'code'
+  const state = generateRandomState()
+  
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${clientId}&` +
+    `redirect_uri=${redirectUri}&` +
+    `scope=${scope}&` +
+    `response_type=${responseType}&` +
+    `state=${state}&` +
+    `access_type=offline&` +
+    `prompt=consent`
+  
+  window.location.href = authUrl
+}
+
+// 生成随机状态字符串，用于防止 CSRF 攻击
+function generateRandomState() {
+  const array = new Uint8Array(16)
+  crypto.getRandomValues(array)
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
+}
 
 // 刷新活跃任务
 async function refreshTasks() {
@@ -74,7 +103,8 @@ async function refreshTasks() {
     } else {
       tasks.value = []
     }
-  } catch {
+  } catch (error) {
+    console.error('获取任务列表失败:', error)
     tasks.value = []
   }
 }
@@ -85,12 +115,13 @@ function mapStatus(status) {
   if (status === 'Analyzing') return 'Analyzing'
   return status || ''
 }
+
 // 时间格式化
 function formatDate(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr)
   if (isNaN(d)) return ''
-  // 返回“YYYY-MM-DD”格式
+  // 返回"YYYY-MM-DD"格式
   return d.toISOString().slice(0, 10)
 }
 
@@ -108,6 +139,7 @@ async function onFileChange(e) {
     await refreshTasks()
     window.alert('任务已创建！')
   } catch (err) {
+    console.error('上传或分析失败:', err)
     window.alert('上传或分析失败')
   }
   // 重置input

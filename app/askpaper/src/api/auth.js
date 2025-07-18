@@ -1,8 +1,8 @@
-import axios from 'axios'
+import api from './axios'
 
 // 获取当前用户信息
-export function getMe() {
-  return axios.get('/api/me').then(res => res.data)
+export function getCurrentUser() {
+  return api.get('/api/me').then(res => res.data)
 }
 
 // 跳转Google登录

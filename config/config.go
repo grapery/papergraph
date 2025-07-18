@@ -49,10 +49,10 @@ func Init() {
 
 	// MySQL配置（可根据实际情况修改）
 	cfg := MySQLConfig{
-		Host:     "127.0.0.1",
+		Host:     "localhost",
 		Port:     3306,
 		User:     "root",
-		Password: "root",
+		Password: "123456789",
 		DBName:   "papergraph",
 		Charset:  "utf8mb4",
 	}
