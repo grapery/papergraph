@@ -66,7 +66,22 @@ func Init() {
 	DB = db
 
 	// 自动迁移所有模型
-	err = db.AutoMigrate(&model.User{}, &model.Paper{}, &model.AnalysisTask{}, &model.AnalysisResult{}, &model.Comment{}, &model.Product{}, &model.UserSubscription{}, &model.PaymentRecord{})
+	err = db.AutoMigrate(
+		&model.User{}, 
+		&model.Paper{}, 
+		&model.AnalysisTask{}, 
+		&model.AnalysisResult{}, 
+		&model.Comment{}, 
+		&model.Product{}, 
+		&model.UserSubscription{}, 
+		&model.PaymentRecord{},
+		&model.BadgeTemplate{},
+		&model.UserBadge{},
+		&model.UserStats{},
+		&model.UserActivity{},
+		&model.UserFollow{},
+		&model.TaskReaction{},
+	)
 	if err != nil {
 		panic("自动迁移失败: " + err.Error())
 	}

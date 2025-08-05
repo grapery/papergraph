@@ -56,19 +56,12 @@ type BadgeTemplate struct {
 
 // TaskReaction 任务评价模型（扩展原有的点赞功能）
 type TaskReaction struct {
-	ID         uint           `gorm:"primaryKey" json:"id"`         // 主键ID
-	TaskID     uint           `gorm:"index" json:"task_id"`         // 任务ID
-	UserID     uint           `gorm:"index" json:"user_id"`         // 用户ID
-	ReactionType string       `gorm:"size:32" json:"reaction_type"` // 评价类型：like/agree/disagree/biased/share
-	CreatedAt  time.Time      `json:"created_at"`                   // 评价时间
-	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`               // 软删除
-	
-	// 联合唯一索引，防止重复评价
-	UniqueIndex struct {
-		TaskID       uint `gorm:"index"`
-		UserID       uint `gorm:"index"`
-		ReactionType string `gorm:"index"`
-	} `gorm:"uniqueIndex:idx_task_user_reaction"`
+	ID           uint           `gorm:"primaryKey" json:"id"`                    // 主键ID
+	TaskID       uint           `gorm:"index" json:"task_id"`                      // 任务ID
+	UserID       uint           `gorm:"index" json:"user_id"`                      // 用户ID
+	ReactionType string         `gorm:"size:32;index" json:"reaction_type"`       // 评价类型：like/agree/disagree/biased/share
+	CreatedAt    time.Time      `json:"created_at"`                                 // 评价时间
+	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`                             // 软删除
 }
 
 // UserStats 用户统计模型

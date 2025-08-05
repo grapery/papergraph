@@ -56,6 +56,21 @@ func InitRouter(subSvc *service.SubscriptionService, badgeSvc *service.BadgeServ
 	auth.GET("/user/:user_id/stats", socialHandler.GetUserStats)
 	auth.POST("/task/react", socialHandler.ReactToTask)
 
+	// 评价相关接口
+	evalHandler := handler.NewEvaluationHandler(config.DB)
+	auth.POST("/evaluations", evalHandler.CreateEvaluation)
+	auth.GET("/evaluations/my", evalHandler.GetMyEvaluations)
+	auth.PUT("/evaluations/:id", evalHandler.UpdateEvaluation)
+	auth.DELETE("/evaluations/:id", evalHandler.DeleteEvaluation)
+	auth.POST("/evaluations/:id/like", evalHandler.LikeEvaluation)
+	
+	// 公开评价接口（无需认证）
+	r.GET("/evaluations/:id", evalHandler.GetEvaluation)
+	r.GET("/papers/:paperId/evaluations", evalHandler.GetEvaluationsByPaper)
+	r.GET("/papers/:paperId/evaluations/statistics", evalHandler.GetEvaluationStatistics)
+	r.GET("/evaluations/top", evalHandler.GetTopEvaluations)
+	r.GET("/evaluations/search", evalHandler.SearchEvaluations)
+
 	// 2. SPA fallback：所有未命中后端API的路由都返回index.html，由VUE前端路由处理
 	r.NoRoute(func(c *gin.Context) {
 		c.File("./app/static/index.html")

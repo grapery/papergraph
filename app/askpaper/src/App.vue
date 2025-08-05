@@ -7,21 +7,14 @@ import NavBar from './components/NavBar.vue'
   <!-- 全局导航栏 -->
   <NavBar />
   <!-- 路由页面内容 -->
-  <router-view />
+  <main class="main-content">
+    <router-view />
+  </main>
 </template>
 
 <style scoped>
-/* 保持原有样式 */
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.main-content {
+  min-height: calc(100vh - 70px);
+  padding-top: 70px;
 }
 </style>

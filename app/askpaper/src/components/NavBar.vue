@@ -7,11 +7,17 @@
         <li :class="{active: activeMenu==='feed'}" @click="go('/feed')">Public Feed</li>
         <li :class="{active: activeMenu==='myanalyses'}" @click="go('/my-analyses')">My Analyses</li>
         <li :class="{active: activeMenu==='myanalysestask'}" @click="go('/my-analyses-task')">My Analyses Task</li>
+        <li :class="{active: activeMenu==='evaluation'}" @click="go('/evaluation')">Paper Evaluation</li>
+        <li :class="{active: activeMenu==='evaluationmanagement'}" @click="go('/evaluation-management')">Evaluation Management</li>
+        <li :class="{active: activeMenu==='evaluationstatistics'}" @click="go('/evaluation-statistics')">Evaluation Statistics</li>
       </ul>
     </div>
     <!-- 搜索框 -->
     <div class="navbar-center">
-      <input class="search-input" type="text" placeholder="Search" v-model="search" />
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" type="text" placeholder="Search" v-model="search" />
+      </div>
     </div>
     <!-- 用户头像或登录按钮 -->
     <div class="navbar-right">
@@ -29,8 +35,30 @@
       <template v-else>
         <button class="login-btn" @click="login">使用gmail登录</button>
       </template>
+      <!-- 移动端菜单按钮 -->
+      <button class="mobile-menu-btn" @click="toggleMobileMenu" v-if="isMobile">
+        <span class="menu-icon" :class="{active: showMobileMenu}">☰</span>
+      </button>
     </div>
   </nav>
+  
+  <!-- 移动端侧边栏菜单 -->
+  <div v-if="showMobileMenu && isMobile" class="mobile-menu-overlay" @click="closeMobileMenu">
+    <div class="mobile-menu" @click.stop>
+      <div class="mobile-menu-header">
+        <span class="mobile-logo">ScholarLens</span>
+        <button class="close-menu-btn" @click="closeMobileMenu">✕</button>
+      </div>
+      <ul class="mobile-nav-menu">
+        <li :class="{active: activeMenu==='feed'}" @click="go('/feed'); closeMobileMenu()">Public Feed</li>
+        <li :class="{active: activeMenu==='myanalyses'}" @click="go('/my-analyses'); closeMobileMenu()">My Analyses</li>
+        <li :class="{active: activeMenu==='myanalysestask'}" @click="go('/my-analyses-task'); closeMobileMenu()">My Analyses Task</li>
+        <li :class="{active: activeMenu==='evaluation'}" @click="go('/evaluation'); closeMobileMenu()">Paper Evaluation</li>
+        <li :class="{active: activeMenu==='evaluationmanagement'}" @click="go('/evaluation-management'); closeMobileMenu()">Evaluation Management</li>
+        <li :class="{active: activeMenu==='evaluationstatistics'}" @click="go('/evaluation-statistics'); closeMobileMenu()">Evaluation Statistics</li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -45,6 +73,9 @@ const activeMenu = computed(() => {
   if (route.path.startsWith('/feed')) return 'feed'
   if (route.path.startsWith('/my-analyses-task')) return 'myanalysestask'
   if (route.path.startsWith('/my-analyses')) return 'myanalyses'
+  if (route.path.startsWith('/evaluation-statistics')) return 'evaluationstatistics'
+  if (route.path.startsWith('/evaluation-management')) return 'evaluationmanagement'
+  if (route.path.startsWith('/evaluation')) return 'evaluation'
   return ''
 })
 
@@ -58,6 +89,14 @@ const defaultAvatar = 'https://api.dicebear.com/7.x/miniavs/svg?seed=1'
 // 用户菜单状态
 const showUserMenu = ref(false)
 
+// 移动端菜单状态
+const isMobile = ref(false)
+const showMobileMenu = ref(false)
+const touchStartX = ref(0)
+const touchStartY = ref(0)
+const touchEndX = ref(0)
+const touchEndY = ref(0)
+
 // 模拟获取用户信息
 onMounted(() => {
   // 检查是否已登录
@@ -65,13 +104,26 @@ onMounted(() => {
   // 检查 URL 参数中是否有登录成功的 token
   handleLoginCallback()
   
+  // 检查屏幕尺寸
+  checkScreenSize()
+  
+  // 监听屏幕尺寸变化
+  window.addEventListener('resize', checkScreenSize)
+  
   // 点击外部关闭用户菜单
   document.addEventListener('click', handleClickOutside)
+  
+  // 添加触摸手势支持
+  document.addEventListener('touchstart', handleTouchStart, { passive: true })
+  document.addEventListener('touchend', handleTouchEnd, { passive: true })
 })
 
 // 组件卸载时移除事件监听
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('resize', checkScreenSize)
+  document.removeEventListener('touchstart', handleTouchStart)
+  document.removeEventListener('touchend', handleTouchEnd)
 })
 
 /**
@@ -228,6 +280,74 @@ function generateRandomState() {
   crypto.getRandomValues(array)
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
 }
+/**
+ * 检查屏幕尺寸
+ */
+function checkScreenSize() {
+  isMobile.value = window.innerWidth <= 768
+}
+
+/**
+ * 切换移动端菜单
+ */
+function toggleMobileMenu() {
+  showMobileMenu.value = !showMobileMenu.value
+}
+
+/**
+ * 关闭移动端菜单
+ */
+function closeMobileMenu() {
+  showMobileMenu.value = false
+}
+
+/**
+ * 处理触摸开始事件
+ */
+function handleTouchStart(event) {
+  if (!isMobile.value) return
+  
+  touchStartX.value = event.touches[0].clientX
+  touchStartY.value = event.touches[0].clientY
+}
+
+/**
+ * 处理触摸结束事件
+ */
+function handleTouchEnd(event) {
+  if (!isMobile.value) return
+  
+  touchEndX.value = event.changedTouches[0].clientX
+  touchEndY.value = event.changedTouches[0].clientY
+  
+  handleSwipeGesture()
+}
+
+/**
+ * 处理滑动手势
+ */
+function handleSwipeGesture() {
+  const deltaX = touchEndX.value - touchStartX.value
+  const deltaY = touchEndY.value - touchStartY.value
+  const minSwipeDistance = 50
+  const maxVerticalDistance = 100
+  
+  // 检查是否为水平滑动
+  if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaY) < maxVerticalDistance) {
+    if (deltaX > 0) {
+      // 从左向右滑动 - 打开菜单
+      if (!showMobileMenu.value) {
+        showMobileMenu.value = true
+      }
+    } else {
+      // 从右向左滑动 - 关闭菜单
+      if (showMobileMenu.value) {
+        closeMobileMenu()
+      }
+    }
+  }
+}
+
 function go(path) {
   router.push(path)
 }
@@ -235,115 +355,385 @@ function go(path) {
 
 <style scoped>
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 32px;
+  padding: 1rem 2rem;
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px 0 #f3f4f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
+
 .navbar-left {
   display: flex;
   align-items: center;
+  gap: 2rem;
 }
+
 .logo {
-  font-weight: bold;
-  font-size: 1.4rem;
-  margin-right: 32px;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #2563eb;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
+
+.logo:hover {
+  color: #1d4ed8;
+}
+
 .nav-menu {
   display: flex;
-  gap: 24px;
+  gap: 1.5rem;
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
 .nav-menu li {
   cursor: pointer;
-  color: #374151;
+  color: #6b7280;
   font-size: 1rem;
-  padding-bottom: 4px;
-  transition: border 0.2s;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
 }
+
+.nav-menu li:hover {
+  color: #374151;
+}
+
 .nav-menu li.active {
-  font-weight: bold;
-  border-bottom: 2px solid #2563eb;
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  font-weight: 600;
 }
+
 .navbar-center {
   flex: 1;
   display: flex;
   justify-content: center;
+  max-width: 400px;
+  margin: 0 2rem;
 }
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  z-index: 2;
+}
+
 .search-input {
-  width: 260px;
-  padding: 8px 12px;
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: #f9fafb;
+  transition: all 0.2s ease;
 }
+
+.search-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
 .navbar-right {
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
+
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #e5e7eb;
+  border: 2px solid #e5e7eb;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s ease;
 }
+
 .avatar:hover {
+  border-color: #2563eb;
   transform: scale(1.05);
 }
+
 .user-menu {
   position: relative;
 }
+
 .user-dropdown {
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 8px;
+  margin-top: 0.5rem;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   border: 1px solid #e5e7eb;
-  min-width: 160px;
-  z-index: 1000;
+  min-width: 200px;
+  z-index: 1001;
+  animation: dropdownSlide 0.2s ease-out;
 }
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .user-info {
-  padding: 12px 16px;
+  padding: 1rem 1.25rem;
   border-bottom: 1px solid #e5e7eb;
   color: #374151;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
+
 .logout-btn {
   width: 100%;
-  padding: 8px 16px;
+  padding: 0.75rem 1.25rem;
   background: none;
   border: none;
   color: #dc2626;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   text-align: left;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  border-radius: 0 0 12px 12px;
 }
+
 .logout-btn:hover {
   background: #fef2f2;
+  color: #b91c1c;
 }
+
 .login-btn {
   background: #2563eb;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 8px 18px;
-  font-size: 1rem;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
 }
+
 .login-btn:hover {
   background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #374151;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: #f3f4f6;
+}
+
+.menu-icon {
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.menu-icon.active {
+  transform: rotate(90deg);
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: #fff;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mobile-logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #2563eb;
+}
+
+.close-menu-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-menu-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.mobile-nav-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-nav-menu li {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 500;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-menu li:hover {
+  background: #f9fafb;
+  color: #2563eb;
+}
+
+.mobile-nav-menu li.active {
+  background: #eff6ff;
+  color: #2563eb;
+  border-left: 3px solid #2563eb;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+  }
+  
+  .navbar-left {
+    gap: 1rem;
+  }
+  
+  .logo {
+    font-size: 1.25rem;
+  }
+  
+  .nav-menu {
+    gap: 1rem;
+  }
+  
+  .nav-menu li {
+    font-size: 0.875rem;
+    padding: 0.25rem 0;
+  }
+  
+  .navbar-center {
+    margin: 0 1rem;
+    max-width: 200px;
+  }
+  
+  .search-input {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .user-dropdown {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-left {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .nav-menu {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .navbar-center {
+    order: 3;
+    width: 100%;
+    margin: 0.5rem 0 0 0;
+    max-width: none;
+  }
+  
+  .navbar-right {
+    margin-left: auto;
+  }
 }
 </style> 

@@ -94,24 +94,52 @@
           <div class="payment-methods">
             <h4>选择支付方式</h4>
             <div class="method-options">
-              <label class="method-option">
-                <input type="radio" name="payment_method" value="alipay" checked>
+              <label class="method-option" :class="{ 'selected': selectedPaymentMethod === 'alipay' }">
+                <input 
+                  type="radio" 
+                  name="payment_method" 
+                  value="alipay" 
+                  v-model="selectedPaymentMethod"
+                  :disabled="isProcessing"
+                >
                 <span class="method-icon">💰</span>
                 <span>支付宝</span>
+                <span class="method-desc">安全快捷的支付方式</span>
               </label>
-              <label class="method-option">
-                <input type="radio" name="payment_method" value="wechat">
+              <label class="method-option" :class="{ 'selected': selectedPaymentMethod === 'wechat' }">
+                <input 
+                  type="radio" 
+                  name="payment_method" 
+                  value="wechat" 
+                  v-model="selectedPaymentMethod"
+                  :disabled="isProcessing"
+                >
                 <span class="method-icon">💚</span>
                 <span>微信支付</span>
+                <span class="method-desc">微信内置支付</span>
               </label>
+            </div>
+            <div v-if="paymentMethodError" class="payment-method-error">
+              {{ paymentMethodError }}
             </div>
           </div>
           
           <div class="payment-actions">
-            <button class="cancel-btn" @click="closePaymentModal">取消</button>
-            <button class="confirm-btn" @click="processPayment" :disabled="isProcessing">
-              {{ isProcessing ? '处理中...' : '确认支付' }}
+            <button class="cancel-btn" @click="closePaymentModal" :disabled="isProcessing">
+              取消
             </button>
+            <button 
+              class="confirm-btn" 
+              @click="processPayment" 
+              :disabled="isProcessing || !selectedPaymentMethod"
+              :title="!selectedPaymentMethod ? '请选择支付方式' : '确认支付'"
+            >
+              <span v-if="isProcessing" class="btn-spinner"></span>
+              <span v-else>{{ isProcessing ? '处理中...' : '确认支付' }}</span>
+            </button>
+          </div>
+          <div v-if="processingError" class="processing-error">
+            {{ processingError }}
           </div>
         </div>
       </div>
@@ -142,6 +170,9 @@ const products = ref([])
 const showPaymentModal = ref(false)
 const selectedPlan = ref({})
 const isProcessing = ref(false)
+const selectedPaymentMethod = ref('alipay')
+const paymentMethodError = ref('')
+const processingError = ref('')
 
 // 页面加载时获取数据
 onMounted(async () => {
@@ -212,20 +243,26 @@ function subscribe(planType) {
 function closePaymentModal() {
   showPaymentModal.value = false
   selectedPlan.value = {}
+  selectedPaymentMethod.value = 'alipay'
+  paymentMethodError.value = ''
+  processingError.value = ''
 }
 
 // 处理支付
 async function processPayment() {
   if (isProcessing.value) return
   
+  // 验证支付方式
+  if (!validatePaymentMethod()) {
+    return
+  }
+  
   isProcessing.value = true
+  processingError.value = ''
   
   try {
-    // 获取支付方式
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value
-    
     // 调用支付API
-    await buySubscription(selectedPlan.value.id, paymentMethod)
+    await buySubscription(selectedPlan.value.id, selectedPaymentMethod.value)
     
     // 重新加载订阅信息和支付记录
     await loadSubscriptionInfo()
@@ -238,21 +275,46 @@ async function processPayment() {
     closePaymentModal()
   } catch (error) {
     console.error('支付处理失败:', error)
+    processingError.value = '支付处理失败，请重试'
     showPaymentError()
   } finally {
     isProcessing.value = false
   }
 }
 
+// 验证支付方式
+function validatePaymentMethod() {
+  if (!selectedPaymentMethod.value) {
+    paymentMethodError.value = '请选择支付方式'
+    return false
+  }
+  
+  paymentMethodError.value = ''
+  return true
+}
+
 // 显示支付成功提示
 function showPaymentSuccess() {
   const toast = document.createElement('div')
   toast.className = 'payment-toast success'
-  toast.textContent = '支付成功！订阅已激活'
+  toast.innerHTML = `
+    <div class="toast-icon">✅</div>
+    <div class="toast-content">
+      <div class="toast-title">支付成功！</div>
+      <div class="toast-message">订阅已激活，感谢您的支持</div>
+    </div>
+  `
   document.body.appendChild(toast)
   
   setTimeout(() => {
-    toast.remove()
+    toast.classList.add('show')
+  }, 100)
+  
+  setTimeout(() => {
+    toast.classList.remove('show')
+    setTimeout(() => {
+      toast.remove()
+    }, 300)
   }, 3000)
 }
 
@@ -260,11 +322,24 @@ function showPaymentSuccess() {
 function showPaymentError() {
   const toast = document.createElement('div')
   toast.className = 'payment-toast error'
-  toast.textContent = '支付失败，请重试'
+  toast.innerHTML = `
+    <div class="toast-icon">❌</div>
+    <div class="toast-content">
+      <div class="toast-title">支付失败</div>
+      <div class="toast-message">请检查支付信息后重试</div>
+    </div>
+  `
   document.body.appendChild(toast)
   
   setTimeout(() => {
-    toast.remove()
+    toast.classList.add('show')
+  }, 100)
+  
+  setTimeout(() => {
+    toast.classList.remove('show')
+    setTimeout(() => {
+      toast.remove()
+    }, 300)
   }, 3000)
 }
 
@@ -768,6 +843,154 @@ function formatDate(dateStr) {
   to {
     transform: translateX(0);
     opacity: 1;
+  }
+}
+
+/* 增强的表单验证和反馈样式 */
+.method-option {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.method-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  padding: 2px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask-composite: xor;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.method-option.selected::before {
+  opacity: 1;
+}
+
+.method-option.selected {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+}
+
+.method-option input[type="radio"]:checked + .method-icon {
+  animation: iconPulse 0.6s ease-in-out;
+}
+
+@keyframes iconPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.payment-method-error {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 0.875rem;
+  border-left: 4px solid #dc2626;
+  animation: shakeIn 0.5s ease-out;
+}
+
+@keyframes shakeIn {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.processing-error {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-size: 0.875rem;
+  border-left: 4px solid #dc2626;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.confirm-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.confirm-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.confirm-btn:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.confirm-btn:disabled {
+  transform: none;
+  box-shadow: none;
+}
+
+/* 表单字段验证样式 */
+.url-input.error {
+  border-color: #dc2626;
+  background: #fef2f2;
+  animation: fieldShake 0.5s ease-out;
+}
+
+@keyframes fieldShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.url-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: #fef2f2;
+  border-radius: 4px;
+  border-left: 3px solid #dc2626;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
