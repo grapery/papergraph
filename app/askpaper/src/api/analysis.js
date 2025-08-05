@@ -1,10 +1,14 @@
 import api from './axios'
 
-// 上传PDF，返回 {paper, task}
+/**
+ * 上传PDF文件
+ * @param {File} file - PDF文件对象
+ * @returns {Promise<{paper: Object, task: Object}>} 返回论文和任务信息
+ */
 export function uploadPaper(file) {
   const formData = new FormData()
   formData.append('file', file)
-  // 按文档，响应结构为 { code, msg, data: { paper, task } }
+  
   return api.post('/api/upload', formData).then(res => {
     if (res.data && res.data.code === 0 && res.data.data) {
       return {
@@ -12,134 +16,147 @@ export function uploadPaper(file) {
         task: res.data.data.task
       }
     } else {
-      // 失败时抛出错误信息
-      throw new Error(res.data && res.data.msg ? res.data.msg : '上传失败')
+      throw new Error(res.data && res.data.message ? res.data.message : '上传失败')
     }
-  })
-}
-
-// 发起分析（保留原有实现，兼容后端）
-export function startAnalysis(file) {
-  // 假设分析需要先上传，拿到文件ID后再分析
-  // 这里可根据后端实际接口调整
-  return uploadPaper(file).then(({ paper, task }) => {
-    // 如果上传已自动创建任务，则直接返回
-    if (task) return task
-    // 否则兼容老流程
-    const fileId = paper && paper.ID
-    if (fileId) {
-      return api.post('/api/start_analysis', { file_id: fileId })
-    }
-    throw new Error('未获取到文件ID')
   })
 }
 
 /**
- * 只用文件ID发起分析任务
- * @param {number|string} fileId 文件ID
- * @returns {Promise<any>} 分析任务结果
+ * 发起分析任务（使用文件ID）
+ * @param {number|string} taskId - 任务ID
+ * @returns {Promise<Object>} 分析任务结果
  */
-export function startAnalysisById(fileId) {
-  return api.post('/api/start_analysis', { file_id: fileId }).then(res => {
+export function startAnalysis(taskId) {
+  return api.post('/api/start_analysis', null, { 
+    params: { task_id: taskId } 
+  }).then(res => {
     if (res.data && res.data.code === 0 && res.data.data) {
       return res.data.data
     } else {
-      throw new Error(res.data && res.data.msg ? res.data.msg : '分析发起失败')
+      throw new Error(res.data && res.data.message ? res.data.message : '分析发起失败')
     }
   })
 }
 
-// 获取用户所有分析任务
+/**
+ * 获取用户所有分析任务
+ * @returns {Promise<Array>} 任务列表
+ */
 export function getUserTasks() {
-  // 返回任务列表
-  return api.get('/api/tasks').then(res => res.data)
-}
-
-// 获取用户活跃任务
-export function getUserActiveTasks() {
-  // 返回活跃任务列表
-  return api.get('/api/active_tasks').then(res => res.data)
+  return api.get('/api/tasks').then(res => {
+    if (res.data && res.data.code === 0) {
+      return res.data.data || []
+    } else {
+      throw new Error(res.data && res.data.message ? res.data.message : '获取任务列表失败')
+    }
+  })
 }
 
 /**
- * @typedef {Object} TaskDetail
- * @property {number} ID - 任务ID
- * @property {string} Title - 任务标题
- * @property {string} Status - 任务状态
- * @property {string} CreatedAt - 创建时间（ISO字符串）
- * // ... 其他后端返回字段
+ * 获取用户活跃任务
+ * @returns {Promise<Array>} 活跃任务列表
  */
+export function getUserActiveTasks() {
+  return api.get('/api/active_tasks').then(res => {
+    if (res.data && res.data.code === 0) {
+      return res.data.data || []
+    } else {
+      throw new Error(res.data && res.data.message ? res.data.message : '获取活跃任务失败')
+    }
+  })
+}
 
 /**
  * 获取任务详情
- * @param {number} task_id 任务ID
- * @returns {Promise<TaskDetail>} 任务详情对象
+ * @param {number|string} taskId - 任务ID
+ * @returns {Promise<Object>} 任务详情对象
  */
-export function getTaskDetail(task_id) {
-  return api.get('/api/task_detail', { params: { task_id } }).then(res => {
+export function getTaskDetail(taskId) {
+  return api.get('/api/task_detail', { 
+    params: { task_id: taskId } 
+  }).then(res => {
     if (res.data && res.data.code === 0 && res.data.data) {
       return res.data.data
     } else {
-      throw new Error(res.data && res.data.msg ? res.data.msg : '获取任务详情失败')
+      throw new Error(res.data && res.data.message ? res.data.message : '获取任务详情失败')
     }
   })
 }
-
-/**
- * @typedef {Object} AnalysisResult
- * @property {number} ID - 分析结果ID
- * @property {number} TaskID - 任务ID
- * @property {Object} Result - 具体分析结果内容（结构视后端定义）
- * @property {number} [score] - 评分（可选，示例字段）
- * @property {string} [summary] - 摘要（可选，示例字段）
- * @property {Object} [details] - 详细内容（可选，示例字段）
- */
 
 /**
  * 获取分析结果
- * @param {number} task_id 任务ID
- * @returns {Promise<AnalysisResult>} 分析结果对象
+ * @param {number|string} taskId - 任务ID
+ * @returns {Promise<Object>} 分析结果对象
  */
-export function getAnalysisResult(task_id) {
-  return api.get('/api/analysis_result', { params: { task_id } }).then(res => {
+export function getAnalysisResult(taskId) {
+  return api.get('/api/analysis_result', { 
+    params: { task_id: taskId } 
+  }).then(res => {
     if (res.data && res.data.code === 0 && res.data.data) {
       return res.data.data
     } else {
-      throw new Error(res.data && res.data.msg ? res.data.msg : '获取分析结果失败')
+      throw new Error(res.data && res.data.message ? res.data.message : '获取分析结果失败')
     }
   })
 }
-
-/**
- * @typedef {Object} SetTaskPublicStatusResult
- * @property {string} message - 设置结果信息（如"设置成功"）
- */
 
 /**
  * 设置任务公开/私有状态
- * @param {number} task_id 任务ID
- * @param {string|number|boolean} is_public 是否公开（"1"/"true"/1/true 为公开，其它为私有）
- * @returns {Promise<SetTaskPublicStatusResult>} 结果对象
+ * @param {number|string} taskId - 任务ID
+ * @param {string|number|boolean} isPublic - 是否公开
+ * @returns {Promise<Object>} 结果对象
  */
-export function setTaskPublicStatus(task_id, is_public) {
-  // 传入任务ID和公开状态
-  return api.post('/api/set_public', { task_id, is_public }).then(res => {
-    if (res.data && res.data.code === 0 && res.data.data && res.data.data.message) {
+export function setTaskPublicStatus(taskId, isPublic) {
+  const formData = new FormData()
+  formData.append('task_id', taskId.toString())
+  formData.append('is_public', isPublic ? '1' : '0')
+  
+  return api.post('/api/set_public', formData).then(res => {
+    if (res.data && res.data.code === 0 && res.data.data) {
       return res.data.data
     } else {
-      throw new Error(res.data && res.data.msg ? res.data.msg : '设置公开状态失败')
+      throw new Error(res.data && res.data.message ? res.data.message : '设置公开状态失败')
     }
   })
 }
 
-// 获取评论
-export function getComments(task_id) {
-  // 传入任务ID，返回评论列表
-  return api.get('/api/comments', { params: { task_id } }).then(res => res.data)
+/**
+ * 获取评论列表
+ * @param {number|string} taskId - 任务ID
+ * @returns {Promise<Array>} 评论列表
+ */
+export function getComments(taskId) {
+  return api.get('/api/comments', { 
+    params: { task_id: taskId } 
+  }).then(res => {
+    if (res.data && res.data.code === 0) {
+      return res.data.data || []
+    } else {
+      throw new Error(res.data && res.data.message ? res.data.message : '获取评论失败')
+    }
+  })
 }
 
-// 新增评论
-export function addComment(task_id, content) {
-  // 传入任务ID和评论内容
-  return api.post('/api/comment', { task_id, content })
+/**
+ * 添加评论
+ * @param {number|string} taskId - 任务ID
+ * @param {string} content - 评论内容
+ * @param {number|string} [parentId] - 父评论ID（可选，用于回复）
+ * @returns {Promise<Object>} 评论对象
+ */
+export function addComment(taskId, content, parentId = null) {
+  const formData = new FormData()
+  formData.append('task_id', taskId.toString())
+  formData.append('content', content)
+  if (parentId) {
+    formData.append('parent_id', parentId.toString())
+  }
+  
+  return api.post('/api/comment', formData).then(res => {
+    if (res.data && res.data.code === 0 && res.data.data) {
+      return res.data.data
+    } else {
+      throw new Error(res.data && res.data.message ? res.data.message : '添加评论失败')
+    }
+  })
 } 

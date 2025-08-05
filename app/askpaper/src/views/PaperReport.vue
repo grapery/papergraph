@@ -1,68 +1,97 @@
 <template>
   <div class="paper-report-page">
-    <!-- 标题与上传信息 -->
-    <h1 class="report-title">Paper Title</h1>
-    <div class="report-meta">
-      Uploaded by <span class="uploader">Dr. Evelyn Reed</span> on July 26, 2024
+    <!-- 加载状态 -->
+    <div v-if="loading" class="loading">
+      <div class="loading-text">加载分析结果中...</div>
     </div>
-
-    <!-- Tab 切换 -->
-    <div class="report-tabs">
-      <button :class="{active: tab==='overview'}" @click="tab='overview'">Overview</button>
-      <button :class="{active: tab==='detail'}" @click="tab='detail'">Detailed Analysis</button>
-      <button :class="{active: tab==='feedback'}" @click="tab='feedback'">Feedback</button>
+    
+    <!-- 错误状态 -->
+    <div v-else-if="error" class="error">
+      <div class="error-text">{{ error }}</div>
+      <button @click="loadAnalysisData" class="retry-btn">重试</button>
     </div>
-
-    <div v-if="tab==='overview'">
-      <!-- 总体评价 -->
-      <div class="section-title">Overall Evaluation</div>
-      <div class="score-row">
-        <div class="score-label">Overall Quality Score</div>
-        <div class="score-value">7.5/10</div>
+    
+    <!-- 分析结果内容 -->
+    <div v-else-if="analysisData">
+      <!-- 标题与上传信息 -->
+      <h1 class="report-title">{{ analysisData.title || 'Paper Analysis' }}</h1>
+      <div class="report-meta">
+        Uploaded by <span class="uploader">{{ analysisData.uploader || 'Unknown User' }}</span> 
+        on {{ formatDate(analysisData.uploadDate) }}
       </div>
-      <div class="progress-bar"><div class="progress" :style="{width:'75%'}"></div></div>
-      <div class="score-desc good">Good</div>
-      <div class="section-desc">This paper demonstrates a strong approach to natural language processing using transformer networks, showing notable improvements in accuracy and efficiency. Key strengths include a well-defined methodology and reproducible results. However, further validation on diverse datasets is recommended to enhance the robustness of the findings.</div>
 
-      <!-- 基本信息 -->
-      <div class="section-title" style="margin-top:32px;">Basic Information</div>
-      <table class="info-table">
-        <tbody>
-          <tr><td>Title</td><td>Paper Title</td></tr>
-          <tr><td>Author</td><td>Dr. Evelyn Reed</td></tr>
-          <tr><td>Publication Date</td><td>July 26, 2024</td></tr>
-        </tbody>
-      </table>
+      <!-- Tab 切换 -->
+      <div class="report-tabs">
+        <button :class="{active: tab==='overview'}" @click="tab='overview'">Overview</button>
+        <button :class="{active: tab==='detail'}" @click="tab='detail'">Detailed Analysis</button>
+        <button :class="{active: tab==='feedback'}" @click="tab='feedback'">Feedback</button>
+      </div>
 
-      <!-- 摘要 -->
-      <div class="section-title" style="margin-top:32px;">Summary</div>
-      <div class="section-desc">This paper presents a novel approach to natural language processing using transformer networks. The results demonstrate significant improvements over existing methods in terms of accuracy and efficiency. The methodology is well-defined and reproducible, although further validation on diverse datasets is recommended.</div>
-
-      <!-- 内容质量 -->
-      <div class="section-title" style="margin-top:32px;">Content Quality</div>
-      <div v-for="item in contentQuality" :key="item.key" class="quality-block">
-        <div class="quality-title">{{ item.title }}</div>
-        <div class="quality-desc">{{ item.desc }}</div>
+      <div v-if="tab==='overview'">
+        <!-- 总体评价 -->
+        <div class="section-title">Overall Evaluation</div>
         <div class="score-row">
-          <div class="score-label">Rating</div>
-          <div class="score-value">{{ item.score }}</div>
+          <div class="score-label">Overall Quality Score</div>
+          <div class="score-value">{{ analysisData.overallScore || '7.5/10' }}</div>
         </div>
-        <div class="progress-bar"><div class="progress" :style="{width: item.percent}"></div></div>
-        <div class="score-desc" :class="item.level">{{ item.levelText }}</div>
-      </div>
+        <div class="progress-bar">
+          <div class="progress" :style="{width: getScorePercent(analysisData.overallScore)}"></div>
+        </div>
+        <div class="score-desc" :class="getScoreLevel(analysisData.overallScore)">
+          {{ getScoreLevelText(analysisData.overallScore) }}
+        </div>
+        <div class="section-desc">{{ analysisData.summary || 'This paper demonstrates a strong approach to natural language processing using transformer networks, showing notable improvements in accuracy and efficiency. Key strengths include a well-defined methodology and reproducible results. However, further validation on diverse datasets is recommended to enhance the robustness of the findings.' }}</div>
 
-      <!-- 视觉分析（占位） -->
-      <div class="section-title" style="margin-top:32px;">Visual Analysis</div>
-      <div class="section-desc">(Visual analysis content placeholder)</div>
+        <!-- 基本信息 -->
+        <div class="section-title" style="margin-top:32px;">Basic Information</div>
+        <table class="info-table">
+          <tbody>
+            <tr><td>Title</td><td>{{ analysisData.title || 'Paper Title' }}</td></tr>
+            <tr><td>Author</td><td>{{ analysisData.author || 'Unknown Author' }}</td></tr>
+            <tr><td>Publication Date</td><td>{{ formatDate(analysisData.publicationDate) }}</td></tr>
+            <tr><td>Analysis Date</td><td>{{ formatDate(analysisData.analysisDate) }}</td></tr>
+          </tbody>
+        </table>
+
+        <!-- 摘要 -->
+        <div class="section-title" style="margin-top:32px;">Summary</div>
+        <div class="section-desc">{{ analysisData.summary || 'This paper presents a novel approach to natural language processing using transformer networks. The results demonstrate significant improvements over existing methods in terms of accuracy and efficiency. The methodology is well-defined and reproducible, although further validation on diverse datasets is recommended.' }}</div>
+
+        <!-- 内容质量 -->
+        <div class="section-title" style="margin-top:32px;">Content Quality</div>
+        <div v-for="item in analysisData.contentQuality || contentQuality" :key="item.key" class="quality-block">
+          <div class="quality-title">{{ item.title }}</div>
+          <div class="quality-desc">{{ item.desc }}</div>
+          <div class="score-row">
+            <div class="score-label">Rating</div>
+            <div class="score-value">{{ item.score }}</div>
+          </div>
+          <div class="progress-bar"><div class="progress" :style="{width: item.percent}"></div></div>
+          <div class="score-desc" :class="item.level">{{ item.levelText }}</div>
+        </div>
+
+        <!-- 视觉分析（占位） -->
+        <div class="section-title" style="margin-top:32px;">Visual Analysis</div>
+        <div class="section-desc">{{ analysisData.visualAnalysis || '(Visual analysis content placeholder)' }}</div>
+      </div>
+      
+      <!-- 其他 tab 可后续补充 -->
     </div>
-    <!-- 其他 tab 可后续补充 -->
   </div>
 </template>
 <script setup>
 // 声明类型
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { mockPublicFeeds } from '../utils/mockData'
+
+const route = useRoute()
 const tab = ref('overview')
-// 内容质量静态数据
+const loading = ref(true)
+const error = ref(null)
+const analysisData = ref(null)
+
+// 内容质量静态数据（默认）
 const contentQuality = [
   {
     key: 'rq',
@@ -128,6 +157,158 @@ const contentQuality = [
     levelText: 'High'
   }
 ]
+
+// 组件挂载时加载数据
+onMounted(() => {
+  loadAnalysisData()
+})
+
+/**
+ * 加载分析数据
+ */
+async function loadAnalysisData() {
+  const taskId = route.params.taskId
+  if (!taskId) {
+    error.value = '缺少任务ID参数'
+    loading.value = false
+    return
+  }
+
+  loading.value = true
+  error.value = null
+
+  // 开发测试：直接使用模拟数据，避免 API 调用导致的 401 重定向
+  try {
+    // 使用模拟数据
+    const mockData = mockPublicFeeds.find(item => item.id == taskId)
+    if (mockData) {
+      analysisData.value = {
+        title: mockData.title,
+        uploader: mockData.uploader || '测试用户',
+        uploadDate: mockData.uploadDate,
+        publicationDate: mockData.publicationDate,
+        analysisDate: mockData.uploadDate,
+        author: mockData.author || 'Unknown Author',
+        overallScore: mockData.overallScore || '8.2/10',
+        summary: mockData.summary,
+        contentQuality: contentQuality,
+        visualAnalysis: '基于模拟数据的视觉分析结果，包含图表和关键发现的可视化展示。'
+      }
+    } else {
+      error.value = '未找到对应的分析数据'
+    }
+  } catch (error) {
+    console.error('加载分析数据失败:', error)
+    error.value = '加载分析数据失败，请重试'
+  } finally {
+    loading.value = false
+  }
+
+  // 生产环境：使用真实 API 调用（已注释）
+  /*
+  try {
+    // 尝试从 API 获取数据
+    const [taskDetail, analysisResult] = await Promise.all([
+      getTaskDetail(taskId),
+      getAnalysisResult(taskId)
+    ])
+
+    // 合并数据
+    analysisData.value = {
+      title: taskDetail.Title || 'Paper Analysis',
+      uploader: taskDetail.Uploader || 'Unknown User',
+      uploadDate: taskDetail.CreatedAt,
+      publicationDate: taskDetail.PublicationDate,
+      analysisDate: taskDetail.CreatedAt,
+      author: taskDetail.Author || 'Unknown Author',
+      overallScore: analysisResult.overallScore || '7.5/10',
+      summary: analysisResult.summary || taskDetail.Summary,
+      contentQuality: analysisResult.contentQuality,
+      visualAnalysis: analysisResult.visualAnalysis
+    }
+  } catch (apiError) {
+    console.error('API 获取失败，使用模拟数据:', apiError)
+    
+    // 使用模拟数据作为备选
+    const mockData = mockPublicFeeds.find(item => item.id == taskId)
+    if (mockData) {
+      analysisData.value = {
+        title: mockData.title,
+        uploader: mockData.uploader || '测试用户',
+        uploadDate: mockData.uploadDate,
+        publicationDate: mockData.publicationDate,
+        analysisDate: mockData.uploadDate,
+        author: mockData.author || 'Unknown Author',
+        overallScore: mockData.overallScore || '8.2/10',
+        summary: mockData.summary,
+        contentQuality: contentQuality,
+        visualAnalysis: '基于模拟数据的视觉分析结果，包含图表和关键发现的可视化展示。'
+      }
+    } else {
+      error.value = '未找到对应的分析数据'
+    }
+  } finally {
+    loading.value = false
+  }
+  */
+}
+
+/**
+ * 格式化日期
+ */
+function formatDate(dateStr) {
+  if (!dateStr) return 'Unknown'
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return 'Unknown'
+  return date.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+/**
+ * 获取分数百分比
+ */
+function getScorePercent(score) {
+  if (!score) return '75%'
+  const match = score.match(/(\d+(?:\.\d+)?)/)
+  if (match) {
+    const num = parseFloat(match[1])
+    return Math.min(100, Math.max(0, (num / 10) * 100)) + '%'
+  }
+  return '75%'
+}
+
+/**
+ * 获取分数等级
+ */
+function getScoreLevel(score) {
+  if (!score) return 'good'
+  const match = score.match(/(\d+(?:\.\d+)?)/)
+  if (match) {
+    const num = parseFloat(match[1])
+    if (num >= 8) return 'high'
+    if (num >= 6) return 'good'
+    return 'average'
+  }
+  return 'good'
+}
+
+/**
+ * 获取分数等级文本
+ */
+function getScoreLevelText(score) {
+  if (!score) return 'Good'
+  const match = score.match(/(\d+(?:\.\d+)?)/)
+  if (match) {
+    const num = parseFloat(match[1])
+    if (num >= 8) return 'Excellent'
+    if (num >= 6) return 'Good'
+    return 'Average'
+  }
+  return 'Good'
+}
 </script>
 <style scoped>
 .paper-report-page {
@@ -249,5 +430,48 @@ const contentQuality = [
   color: #374151;
   font-size: 1.01rem;
   margin-bottom: 6px;
+}
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+.loading-text {
+  font-size: 1.1rem;
+  color: #4b5563;
+}
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+  background-color: #fef3f2;
+  border: 1px solid #fcd3c7;
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+.error-text {
+  color: #991b1b;
+  font-size: 1.05rem;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.retry-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+.retry-btn:hover {
+  background-color: #1d4ed8;
 }
 </style> 

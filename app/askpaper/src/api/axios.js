@@ -39,9 +39,14 @@ api.interceptors.response.use(
       
       switch (status) {
         case 401:
-          // 未授权，清除 token 并跳转到登录页
+          // 未授权，清除 token
           localStorage.removeItem('auth_token')
-          window.location.href = '/feed'
+          // 开发模式下不自动重定向，避免影响测试
+          if (import.meta.env.PROD) {
+            window.location.href = '/feed'
+          } else {
+            console.warn('开发模式：401 错误，已清除 token，未自动重定向')
+          }
           break
         case 403:
           // 禁止访问

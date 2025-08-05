@@ -1,6 +1,7 @@
 package router
 
 import (
+	"papergraph/config"
 	"papergraph/handler"
 	"papergraph/middleware"
 	"papergraph/service"
@@ -8,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// InitRouter 初始化路由，支持注入订阅服务
-func InitRouter(subSvc *service.SubscriptionService) *gin.Engine {
+// InitRouter 初始化路由，支持注入订阅服务和奖章服务
+func InitRouter(subSvc *service.SubscriptionService, badgeSvc *service.BadgeService) *gin.Engine {
 	r := gin.Default()
 
 	// 1. VUE静态资源服务，服务前端构建产物（assets、favicon等）
@@ -48,6 +49,12 @@ func InitRouter(subSvc *service.SubscriptionService) *gin.Engine {
 	auth.POST("/subscription/decrement_trial", subHandler.DecrementFreeTrial)
 	auth.GET("/subscription/payment_records", subHandler.ListPaymentRecords)
 	auth.GET("/subscription/user_subscriptions", subHandler.ListUserSubscriptions)
+
+	// 社交和奖章相关接口
+	socialHandler := handler.NewSocialHandler(nil, badgeSvc, config.DB)
+	auth.GET("/user/:user_id/badges", socialHandler.GetUserBadges)
+	auth.GET("/user/:user_id/stats", socialHandler.GetUserStats)
+	auth.POST("/task/react", socialHandler.ReactToTask)
 
 	// 2. SPA fallback：所有未命中后端API的路由都返回index.html，由VUE前端路由处理
 	r.NoRoute(func(c *gin.Context) {

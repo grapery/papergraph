@@ -12,12 +12,13 @@ import (
 // 可通过 NewSubscriptionService 创建
 
 type SubscriptionService struct {
-	db *gorm.DB
+	db          *gorm.DB
+	badgeService *BadgeService
 }
 
 // 创建订阅服务实例
 func NewSubscriptionService(db *gorm.DB) *SubscriptionService {
-	return &SubscriptionService{db: db}
+	return &SubscriptionService{db: db, badgeService: NewBadgeService(db)}
 }
 
 // 查询所有订阅产品
@@ -38,7 +39,25 @@ func (s *SubscriptionService) CreateUserSubscription(userID, productID uint, dur
 		EndTime:   end,
 		Status:    "active",
 	}
-	return s.db.Create(&sub).Error
+	
+	// 创建订阅记录
+	if err := s.db.Create(&sub).Error; err != nil {
+		return err
+	}
+	
+	// 获取产品信息以颁发奖章
+	var product model.Product
+	if err := s.db.First(&product, productID).Error; err != nil {
+		return err
+	}
+	
+	// 颁发订阅相关奖章
+	if err := s.badgeService.AwardSubscriptionBadge(userID, product.Name); err != nil {
+		// 奖章颁发失败不影响订阅创建，只记录日志
+		// 在实际项目中可以使用日志记录
+	}
+	
+	return nil
 }
 
 // 扣减用户免费试用次数

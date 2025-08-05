@@ -25,24 +25,22 @@
     <!-- 分析卡片列表 -->
     <div v-if="feedList.length === 0" class="empty">暂无公开分析</div>
     <div v-else class="feed-list">
-      <div v-for="item in feedList" :key="item.id" class="feed-card">
-        <!-- 左侧内容 -->
-        <div class="feed-card-content">
-          <div class="feed-card-title">{{ item.title }}</div>
-          <div class="feed-card-summary">{{ item.summary }}</div>
-          <button class="view-btn">View Analysis</button>
-        </div>
-        <!-- 右侧图片 -->
-        <div class="feed-card-img">
-          <img :src="item.image" alt="analysis cover" />
-        </div>
-      </div>
+      <EnhancedFeedCard 
+        v-for="item in feedList" 
+        :key="item.id" 
+        :item="item"
+        @reaction-updated="handleReactionUpdated"
+      />
     </div>
   </div>
 </template>
 <script setup>
 // 声明类型
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import EnhancedFeedCard from '../components/EnhancedFeedCard.vue'
+
+const router = useRouter()
 // Tab 配置
 const tabs = [
   { key: 'latest', label: 'Latest', icon: '🕒' },
@@ -57,31 +55,81 @@ const allFeeds = [
     id: 1,
     title: 'Advancements in Quantum Computing',
     summary: 'This paper explores recent breakthroughs in quantum computing, focusing on new qubit designs and error correction techniques. The analysis highlights the potential impact on various fields, including cryptography and materials science.',
-    image: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80'
+    image: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
+    user_name: 'Dr. Alice Chen',
+    like_count: 42,
+    comment_count: 8,
+    reaction_counts: {
+      like: 42,
+      agree: 15,
+      disagree: 3,
+      biased: 1,
+      share: 12
+    }
   },
   {
     id: 2,
     title: 'The Role of AI in Climate Change Mitigation',
     summary: 'An in-depth analysis of how artificial intelligence can be applied to address climate change, covering areas such as renewable energy optimization, carbon capture, and climate modeling.',
-    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80'
+    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+    user_name: 'Prof. Bob Smith',
+    like_count: 28,
+    comment_count: 5,
+    reaction_counts: {
+      like: 28,
+      agree: 18,
+      disagree: 2,
+      biased: 0,
+      share: 8
+    }
   },
   {
     id: 3,
     title: 'Exploring the Human Microbiome',
     summary: 'This analysis delves into a study on the human microbiome, examining its composition, functions, and influence on health and disease. Key findings and implications for personalized medicine are discussed.',
-    image: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80'
+    image: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+    user_name: 'Dr. Carol Johnson',
+    like_count: 35,
+    comment_count: 12,
+    reaction_counts: {
+      like: 35,
+      agree: 22,
+      disagree: 1,
+      biased: 0,
+      share: 15
+    }
   },
   {
     id: 4,
     title: 'The Future of Space Exploration',
     summary: 'A comprehensive analysis of current and future space exploration missions, including advancements in propulsion systems, habitat design, and the search for extraterrestrial life.',
-    image: 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80'
+    image: 'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80',
+    user_name: 'Dr. David Wilson',
+    like_count: 51,
+    comment_count: 6,
+    reaction_counts: {
+      like: 51,
+      agree: 31,
+      disagree: 4,
+      biased: 2,
+      share: 20
+    }
   },
   {
     id: 5,
     title: 'Innovations in Sustainable Agriculture',
     summary: 'This paper analysis focuses on sustainable agriculture practices, exploring new technologies and methods for improving crop yields while minimizing environmental impact.',
-    image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=400&q=80'
+    image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=400&q=80',
+    user_name: 'Dr. Emma Brown',
+    like_count: 19,
+    comment_count: 3,
+    reaction_counts: {
+      like: 19,
+      agree: 12,
+      disagree: 1,
+      biased: 0,
+      share: 5
+    }
   }
 ]
 // 根据 tab 和搜索过滤数据
@@ -93,6 +141,23 @@ const feedList = computed(() => {
     item.summary.toLowerCase().includes(searchText.value.toLowerCase())
   )
 })
+
+/**
+ * 跳转到分析详情页
+ * @param {number} taskId 任务ID
+ */
+function viewAnalysis(taskId) {
+  router.push(`/paper-report/${taskId}`)
+}
+
+/**
+ * 处理评价更新事件
+ * @param {Object} data 评价数据
+ */
+function handleReactionUpdated(data) {
+  console.log('Reaction updated:', data)
+  // 这里可以添加实际的评价更新逻辑
+}
 </script>
 <style scoped>
 .explore-page {

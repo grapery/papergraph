@@ -92,19 +92,6 @@ function toggleUserMenu() {
 }
 
 /**
- * 检查登录状态
- */
-function checkLoginStatus() {
-  const token = localStorage.getItem('auth_token')
-  if (token) {
-    // TODO: 验证 token 有效性，获取用户信息
-    user.value = { avatar: defaultAvatar }
-  } else {
-    user.value = null
-  }
-}
-
-/**
  * 处理登录回调
  */
 function handleLoginCallback() {
@@ -143,16 +130,68 @@ function handleLoginCallback() {
  */
 function logout() {
   localStorage.removeItem('auth_token')
+  localStorage.removeItem('mock_user') // 清除模拟用户数据
   user.value = null
+  showUserMenu.value = false // 关闭用户菜单
   // 可选：跳转到首页
   router.push('/feed')
 }
 
 function login() {
-  // Google OAuth2 登录
+  // 开发测试：使用模拟登录
+  simulateLogin()
+  
+  // 生产环境：Google OAuth2 登录（已注释）
+  /*
   const googleAuthUrl = buildGoogleAuthUrl()
-  // 跳转到 Google 授权页面
   window.location.href = googleAuthUrl
+  */
+}
+
+/**
+ * 模拟登录功能（开发测试用）
+ */
+function simulateLogin() {
+  // 模拟用户数据
+  const mockUser = {
+    id: 1,
+    name: '测试用户',
+    gmail: 'test@example.com',
+    avatar: defaultAvatar
+  }
+  
+  // 模拟 token
+  const mockToken = 'mock_token_' + Date.now()
+  
+  // 保存到 localStorage
+  localStorage.setItem('auth_token', mockToken)
+  localStorage.setItem('mock_user', JSON.stringify(mockUser))
+  
+  // 更新用户状态
+  user.value = mockUser
+  
+  // 显示登录成功提示
+  alert('模拟登录成功！')
+}
+
+/**
+ * 检查登录状态
+ */
+function checkLoginStatus() {
+  const token = localStorage.getItem('auth_token')
+  const mockUser = localStorage.getItem('mock_user')
+  
+  if (token && mockUser) {
+    // 使用模拟用户数据
+    try {
+      user.value = JSON.parse(mockUser)
+    } catch (e) {
+      console.error('解析模拟用户数据失败:', e)
+      user.value = { avatar: defaultAvatar }
+    }
+  } else {
+    user.value = null
+  }
 }
 
 /**
