@@ -4,7 +4,19 @@
       "Bash(find:*)",
       "Bash(rm:*)",
       "Bash(go build:*)",
-      "Bash(go fmt:*)"
+      "Bash(go fmt:*)",
+      "Bash(docker:*)",
+      "Bash(go:*)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(lsof:*)",
+      "Bash(curl:*)",
+      "Bash(mysql:*)",
+      "Bash(timeout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(kill:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

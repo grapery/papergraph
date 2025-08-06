@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"net/http"
 	"strconv"
+	"papergraph/model"
 	"papergraph/service"
 	"papergraph/utils"
 	
@@ -23,27 +23,28 @@ func NewEvaluationHandler(db *gorm.DB) *EvaluationHandler {
 }
 
 // CreateEvaluation 创建评价
-// @Summary 创建论文评价
-// @Description 创建一个新的论文多维度评价
+// @Summary 创建评价
+// @Description 创建新的论文评价
 // @Tags evaluation
 // @Accept json
 // @Produce json
 // @Param evaluation body model.PaperEvaluation true "评价数据"
 // @Success 201 {object} model.PaperEvaluation
 // @Failure 400 {object} utils.Response
+// @Failure 401 {object} utils.Response
 // @Failure 500 {object} utils.Response
 // @Router /api/evaluations [post]
 func (h *EvaluationHandler) CreateEvaluation(c *gin.Context) {
 	var evaluation model.PaperEvaluation
 	if err := c.ShouldBindJSON(&evaluation); err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid request data", err))
+		utils.FailWithMsg(c, "Invalid request data")
 		return
 	}
 	
 	// 验证用户权限
 	userID := c.GetUint("user_id")
 	if userID == 0 {
-		c.JSON(http.StatusUnauthorized, utils.ErrorResponse("Unauthorized", nil))
+		utils.FailWithMsg(c, "Unauthorized")
 		return
 	}
 	
@@ -51,11 +52,11 @@ func (h *EvaluationHandler) CreateEvaluation(c *gin.Context) {
 	
 	// 创建评价
 	if err := h.evaluationService.CreateEvaluation(&evaluation); err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to create evaluation", err))
+		utils.FailWithMsg(c, "Failed to create evaluation")
 		return
 	}
 	
-	c.JSON(http.StatusCreated, utils.SuccessResponse(evaluation))
+	utils.OkWithData(c, evaluation)
 }
 
 // GetEvaluation 获取评价详情
@@ -72,17 +73,17 @@ func (h *EvaluationHandler) GetEvaluation(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid evaluation ID", err))
+		utils.FailWithMsg(c, "Invalid evaluation ID")
 		return
 	}
 	
 	evaluation, err := h.evaluationService.GetEvaluationByID(uint(id))
 	if err != nil {
-		c.JSON(http.StatusNotFound, utils.ErrorResponse("Evaluation not found", err))
+		utils.FailWithMsg(c, "Evaluation not found")
 		return
 	}
 	
-	c.JSON(http.StatusOK, utils.SuccessResponse(evaluation))
+	utils.OkWithData(c, evaluation)
 }
 
 // GetEvaluationsByPaper 获取论文的评价列表
@@ -101,7 +102,7 @@ func (h *EvaluationHandler) GetEvaluationsByPaper(c *gin.Context) {
 	paperIdStr := c.Param("paperId")
 	paperId, err := strconv.ParseUint(paperIdStr, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid paper ID", err))
+		utils.FailWithMsg(c, "Invalid paper ID")
 		return
 	}
 	
@@ -117,19 +118,16 @@ func (h *EvaluationHandler) GetEvaluationsByPaper(c *gin.Context) {
 	
 	evaluations, total, err := h.evaluationService.GetEvaluationsByPaperID(uint(paperId), page, pageSize)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to get evaluations", err))
+		utils.FailWithMsg(c, "Failed to get evaluations")
 		return
 	}
 	
-	response := map[string]interface{}{
+	utils.OkWithData(c, gin.H{
 		"evaluations": evaluations,
 		"total":       total,
 		"page":        page,
-		"pageSize":    pageSize,
-		"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
-	}
-	
-	c.JSON(http.StatusOK, utils.SuccessResponse(response))
+		"page_size":   pageSize,
+	})
 }
 
 // GetMyEvaluations 获取我的评价列表
@@ -140,13 +138,13 @@ func (h *EvaluationHandler) GetEvaluationsByPaper(c *gin.Context) {
 // @Param page query int false "页码" default(1)
 // @Param pageSize query int false "每页大小" default(10)
 // @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} utils.Response
+// @Failure 401 {object} utils.Response
 // @Failure 500 {object} utils.Response
 // @Router /api/evaluations/my [get]
 func (h *EvaluationHandler) GetMyEvaluations(c *gin.Context) {
 	userID := c.GetUint("user_id")
 	if userID == 0 {
-		c.JSON(http.StatusUnauthorized, utils.ErrorResponse("Unauthorized", nil))
+		utils.FailWithMsg(c, "Unauthorized")
 		return
 	}
 	
@@ -162,19 +160,16 @@ func (h *EvaluationHandler) GetMyEvaluations(c *gin.Context) {
 	
 	evaluations, total, err := h.evaluationService.GetEvaluationsByUserID(userID, page, pageSize)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to get evaluations", err))
+		utils.FailWithMsg(c, "Failed to get evaluations")
 		return
 	}
 	
-	response := map[string]interface{}{
+	utils.OkWithData(c, gin.H{
 		"evaluations": evaluations,
 		"total":       total,
 		"page":        page,
-		"pageSize":    pageSize,
-		"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
-	}
-	
-	c.JSON(http.StatusOK, utils.SuccessResponse(response))
+		"page_size":   pageSize,
+	})
 }
 
 // UpdateEvaluation 更新评价
@@ -184,51 +179,43 @@ func (h *EvaluationHandler) GetMyEvaluations(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "评价ID"
-// @Param evaluation body model.PaperEvaluation true "更新数据"
+// @Param evaluation body model.PaperEvaluation true "评价数据"
 // @Success 200 {object} model.PaperEvaluation
 // @Failure 400 {object} utils.Response
-// @Failure 403 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 404 {object} utils.Response
 // @Failure 500 {object} utils.Response
 // @Router /api/evaluations/{id} [put]
 func (h *EvaluationHandler) UpdateEvaluation(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid evaluation ID", err))
+		utils.FailWithMsg(c, "Invalid evaluation ID")
 		return
 	}
 	
+	var evaluation model.PaperEvaluation
+	if err := c.ShouldBindJSON(&evaluation); err != nil {
+		utils.FailWithMsg(c, "Invalid request data")
+		return
+	}
+	
+	// 验证用户权限
 	userID := c.GetUint("user_id")
 	if userID == 0 {
-		c.JSON(http.StatusUnauthorized, utils.ErrorResponse("Unauthorized", nil))
+		utils.FailWithMsg(c, "Unauthorized")
 		return
 	}
 	
-	// 检查评价是否存在并验证权限
-	existingEvaluation, err := h.evaluationService.GetEvaluationByID(uint(id))
-	if err != nil {
-		c.JSON(http.StatusNotFound, utils.ErrorResponse("Evaluation not found", err))
+	evaluation.ID = uint(id)
+	evaluation.UserID = userID
+	
+	if err := h.evaluationService.UpdateEvaluation(&evaluation); err != nil {
+		utils.FailWithMsg(c, "Failed to update evaluation")
 		return
 	}
 	
-	if existingEvaluation.UserID != userID {
-		c.JSON(http.StatusForbidden, utils.ErrorResponse("You can only update your own evaluations", nil))
-		return
-	}
-	
-	var updateData model.PaperEvaluation
-	if err := c.ShouldBindJSON(&updateData); err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid request data", err))
-		return
-	}
-	
-	// 更新评价
-	if err := h.evaluationService.UpdateEvaluation(&updateData); err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to update evaluation", err))
-		return
-	}
-	
-	c.JSON(http.StatusOK, utils.SuccessResponse(updateData))
+	utils.OkWithData(c, evaluation)
 }
 
 // DeleteEvaluation 删除评价
@@ -238,81 +225,70 @@ func (h *EvaluationHandler) UpdateEvaluation(c *gin.Context) {
 // @Produce json
 // @Param id path int true "评价ID"
 // @Success 200 {object} utils.Response
-// @Failure 400 {object} utils.Response
-// @Failure 403 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 404 {object} utils.Response
 // @Failure 500 {object} utils.Response
 // @Router /api/evaluations/{id} [delete]
 func (h *EvaluationHandler) DeleteEvaluation(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid evaluation ID", err))
+		utils.FailWithMsg(c, "Invalid evaluation ID")
 		return
 	}
 	
+	// 验证用户权限
 	userID := c.GetUint("user_id")
 	if userID == 0 {
-		c.JSON(http.StatusUnauthorized, utils.ErrorResponse("Unauthorized", nil))
+		utils.FailWithMsg(c, "Unauthorized")
 		return
 	}
 	
-	// 检查评价是否存在并验证权限
-	existingEvaluation, err := h.evaluationService.GetEvaluationByID(uint(id))
-	if err != nil {
-		c.JSON(http.StatusNotFound, utils.ErrorResponse("Evaluation not found", err))
-		return
-	}
-	
-	if existingEvaluation.UserID != userID {
-		c.JSON(http.StatusForbidden, utils.ErrorResponse("You can only delete your own evaluations", nil))
-		return
-	}
-	
-	// 删除评价
 	if err := h.evaluationService.DeleteEvaluation(uint(id)); err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to delete evaluation", err))
+		utils.FailWithMsg(c, "Failed to delete evaluation")
 		return
 	}
 	
-	c.JSON(http.StatusOK, utils.SuccessResponse("Evaluation deleted successfully"))
+	utils.OkWithMsg(c, "Evaluation deleted successfully")
 }
 
 // LikeEvaluation 点赞评价
 // @Summary 点赞评价
-// @Description 对指定的评价进行点赞或取消点赞
+// @Description 为指定评价点赞
 // @Tags evaluation
 // @Produce json
 // @Param id path int true "评价ID"
 // @Success 200 {object} utils.Response
-// @Failure 400 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 404 {object} utils.Response
 // @Failure 500 {object} utils.Response
 // @Router /api/evaluations/{id}/like [post]
 func (h *EvaluationHandler) LikeEvaluation(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid evaluation ID", err))
+		utils.FailWithMsg(c, "Invalid evaluation ID")
 		return
 	}
 	
+	// 验证用户权限
 	userID := c.GetUint("user_id")
 	if userID == 0 {
-		c.JSON(http.StatusUnauthorized, utils.ErrorResponse("Unauthorized", nil))
+		utils.FailWithMsg(c, "Unauthorized")
 		return
 	}
 	
-	// 点赞或取消点赞
 	if err := h.evaluationService.LikeEvaluation(uint(id), userID); err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to like evaluation", err))
+		utils.FailWithMsg(c, "Failed to like evaluation")
 		return
 	}
 	
-	c.JSON(http.StatusOK, utils.SuccessResponse("Like operation successful"))
+	utils.OkWithMsg(c, "Evaluation liked successfully")
 }
 
 // GetEvaluationStatistics 获取评价统计
 // @Summary 获取评价统计
-// @Description 获取指定论文的评价统计信息
+// @Description 获取指定论文的评价统计数据
 // @Tags evaluation
 // @Produce json
 // @Param paperId path int true "论文ID"
@@ -324,17 +300,17 @@ func (h *EvaluationHandler) GetEvaluationStatistics(c *gin.Context) {
 	paperIdStr := c.Param("paperId")
 	paperId, err := strconv.ParseUint(paperIdStr, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid paper ID", err))
+		utils.FailWithMsg(c, "Invalid paper ID")
 		return
 	}
 	
 	stats, err := h.evaluationService.GetEvaluationStatistics(uint(paperId))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to get evaluation statistics", err))
+		utils.FailWithMsg(c, "Failed to get evaluation statistics")
 		return
 	}
 	
-	c.JSON(http.StatusOK, utils.SuccessResponse(stats))
+	utils.OkWithData(c, stats)
 }
 
 // GetTopEvaluations 获取高分评价
@@ -342,7 +318,7 @@ func (h *EvaluationHandler) GetEvaluationStatistics(c *gin.Context) {
 // @Description 获取评分最高的评价列表
 // @Tags evaluation
 // @Produce json
-// @Param limit query int false "限制数量" default(10)
+// @Param limit query int false "返回数量限制" default(10)
 // @Success 200 {object} []model.PaperEvaluation
 // @Failure 500 {object} utils.Response
 // @Router /api/evaluations/top [get]
@@ -354,16 +330,16 @@ func (h *EvaluationHandler) GetTopEvaluations(c *gin.Context) {
 	
 	evaluations, err := h.evaluationService.GetTopEvaluations(limit)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to get top evaluations", err))
+		utils.FailWithMsg(c, "Failed to get top evaluations")
 		return
 	}
 	
-	c.JSON(http.StatusOK, utils.SuccessResponse(evaluations))
+	utils.OkWithData(c, evaluations)
 }
 
 // SearchEvaluations 搜索评价
 // @Summary 搜索评价
-// @Description 根据关键词搜索评价
+// @Description 根据关键词搜索评价内容
 // @Tags evaluation
 // @Produce json
 // @Param q query string true "搜索关键词"
@@ -376,7 +352,7 @@ func (h *EvaluationHandler) GetTopEvaluations(c *gin.Context) {
 func (h *EvaluationHandler) SearchEvaluations(c *gin.Context) {
 	query := c.Query("q")
 	if query == "" {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse("Search query is required", nil))
+		utils.FailWithMsg(c, "Search query is required")
 		return
 	}
 	
@@ -392,18 +368,15 @@ func (h *EvaluationHandler) SearchEvaluations(c *gin.Context) {
 	
 	evaluations, total, err := h.evaluationService.SearchEvaluations(query, page, pageSize)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to search evaluations", err))
+		utils.FailWithMsg(c, "Failed to search evaluations")
 		return
 	}
 	
-	response := map[string]interface{}{
+	utils.OkWithData(c, gin.H{
 		"evaluations": evaluations,
 		"total":       total,
 		"page":        page,
-		"pageSize":    pageSize,
-		"totalPages":  (total + int64(pageSize) - 1) / int64(pageSize),
+		"page_size":   pageSize,
 		"query":       query,
-	}
-	
-	c.JSON(http.StatusOK, utils.SuccessResponse(response))
+	})
 }

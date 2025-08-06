@@ -640,106 +640,110 @@ function getScoreColor(score) {
 .evaluation-management {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px;
 }
 
 .page-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
 
 .page-header h1 {
-  font-size: 2.5rem;
-  color: #1e293b;
-  margin-bottom: 10px;
+  font-size: 2rem;
+  color: var(--color-fg-default);
+  margin-bottom: 8px;
 }
 
 .page-header p {
-  color: #64748b;
-  font-size: 1.1rem;
+  color: var(--color-fg-muted);
+  font-size: 16px;
 }
 
 /* 评价表单样式 */
 .evaluation-form {
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+  background: var(--color-bg-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
+  padding: 24px;
+  box-shadow: var(--shadow-default);
+  margin-bottom: 24px;
 }
 
 .form-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-muted);
 }
 
 .form-header h2 {
-  color: #1e293b;
+  color: var(--color-fg-default);
   margin: 0;
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 20px;
   cursor: pointer;
-  color: #64748b;
-  padding: 5px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  color: var(--color-fg-muted);
+  padding: 4px;
+  border-radius: var(--border-radius-medium);
+  transition: all var(--transition-normal);
 }
 
 .close-btn:hover {
-  background: #f1f5f9;
-  color: #374151;
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
 }
 
 .form-section {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .form-section h3 {
-  color: #1e293b;
-  margin-bottom: 20px;
-  font-size: 1.3rem;
+  color: var(--color-fg-default);
+  margin-bottom: 16px;
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
-  color: #374151;
-  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--color-fg-default);
+  font-weight: var(--font-weight-medium);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
+  font-size: 14px;
+  transition: all var(--transition-normal);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-brand);
+  box-shadow: var(--shadow-focus);
 }
 
 .score-input {
-  max-width: 150px;
+  max-width: 120px;
 }
 
 .checkbox-label {
@@ -747,168 +751,188 @@ function getScoreColor(score) {
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-fg-default);
 }
 
 /* 维度评分样式 */
 .dimensions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 .dimension-item {
-  background: #f8fafc;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-subtle);
+  padding: 16px;
+  border-radius: var(--border-radius-medium);
+  border: 1px solid var(--color-border-default);
 }
 
 .dimension-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .dimension-icon {
-  font-size: 1.5rem;
+  font-size: 20px;
 }
 
 .dimension-name {
   flex: 1;
-  font-weight: 600;
-  color: #1e293b;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-fg-default);
+  font-size: 14px;
 }
 
 .dimension-score {
-  width: 80px;
-  padding: 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  width: 70px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
   text-align: center;
+  font-size: 14px;
 }
 
 .dimension-description {
-  color: #64748b;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  color: var(--color-fg-muted);
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 /* 分类评分样式 */
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 .category-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+}
+
+.category-item label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-fg-default);
+  font-size: 14px;
 }
 
 .category-score {
-  padding: 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
   text-align: center;
+  font-size: 14px;
 }
 
 /* 详细维度信息样式 */
 .detail-dimensions {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 24px;
 }
 
 .detail-dimension h4 {
-  color: #1e293b;
-  margin-bottom: 15px;
-  font-size: 1.2rem;
+  color: var(--color-fg-default);
+  margin-bottom: 12px;
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-semibold);
 }
 
 .metrics-section h5 {
-  color: #374151;
-  margin: 15px 0 10px 0;
-  font-size: 1rem;
+  color: var(--color-fg-muted);
+  margin: 12px 0 8px 0;
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
 }
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
 }
 
 .metric-item {
-  background: #f8fafc;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-subtle);
+  padding: 12px;
+  border-radius: var(--border-radius-medium);
+  border: 1px solid var(--color-border-default);
 }
 
 .metric-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .metric-name {
-  font-weight: 600;
-  color: #1e293b;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-fg-default);
+  font-size: 14px;
 }
 
 .metric-score {
-  width: 60px;
-  padding: 6px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
+  width: 50px;
+  padding: 4px 6px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
   text-align: center;
+  font-size: 13px;
 }
 
 .metric-description {
-  color: #64748b;
-  font-size: 0.9rem;
-  margin-bottom: 10px;
+  color: var(--color-fg-muted);
+  font-size: 13px;
+  margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 /* 表单操作样式 */
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 15px;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 2px solid #e2e8f0;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-muted);
 }
 
 .btn-cancel,
 .btn-submit {
-  padding: 12px 24px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: var(--border-radius-medium);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-cancel {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-btn-bg);
+  color: var(--color-fg-default);
+  border: 1px solid var(--color-btn-border);
 }
 
 .btn-cancel:hover {
-  background: #e5e7eb;
+  background: var(--color-btn-hover-bg);
+  border-color: var(--color-btn-hover-border);
 }
 
 .btn-submit {
-  background: #3b82f6;
-  color: white;
+  background: var(--color-btn-primary-bg);
+  color: var(--color-fg-on-emphasis);
+  border: 1px solid var(--color-btn-primary-border);
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: #2563eb;
+  background: var(--color-btn-primary-hover-bg);
+  border-color: var(--color-btn-primary-hover-border);
 }
 
 .btn-submit:disabled {
@@ -921,66 +945,69 @@ function getScoreColor(score) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .search-section {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .search-input {
-  padding: 10px 15px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
+  font-size: 14px;
   width: 300px;
 }
 
 .search-btn {
-  padding: 10px 15px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  padding: 6px 12px;
+  background: var(--color-btn-primary-bg);
+  color: var(--color-fg-on-emphasis);
+  border: 1px solid var(--color-btn-primary-border);
+  border-radius: var(--border-radius-medium);
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all var(--transition-normal);
+  font-size: 14px;
 }
 
 .search-btn:hover {
-  background: #2563eb;
+  background: var(--color-btn-primary-hover-bg);
+  border-color: var(--color-btn-primary-hover-border);
 }
 
 .btn-create {
-  padding: 10px 20px;
-  background: #10b981;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  padding: 6px 16px;
+  background: var(--color-btn-primary-bg);
+  color: var(--color-fg-on-emphasis);
+  border: 1px solid var(--color-btn-primary-border);
+  border-radius: var(--border-radius-medium);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-create:hover {
-  background: #059669;
+  background: var(--color-btn-primary-hover-bg);
+  border-color: var(--color-btn-primary-hover-border);
 }
 
 /* 加载状态 */
 .loading {
   text-align: center;
-  padding: 60px 0;
+  padding: 48px 0;
 }
 
 .loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #e5e7eb;
-  border-top: 4px solid #3b82f6;
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border-muted);
+  border-top: 3px solid var(--color-brand);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
+  margin: 0 auto 16px;
 }
 
 @keyframes spin {
@@ -991,64 +1018,64 @@ function getScoreColor(score) {
 /* 空状态 */
 .empty-state {
   text-align: center;
-  padding: 60px 0;
+  padding: 48px 0;
 }
 
 .empty-icon {
-  font-size: 4rem;
-  margin-bottom: 20px;
+  font-size: 3rem;
+  margin-bottom: 16px;
   opacity: 0.5;
 }
 
 .empty-state h3 {
-  color: #1e293b;
-  margin-bottom: 10px;
+  color: var(--color-fg-default);
+  margin-bottom: 8px;
 }
 
 .empty-state p {
-  color: #64748b;
-  margin-bottom: 20px;
+  color: var(--color-fg-muted);
+  margin-bottom: 16px;
 }
 
 /* 评价卡片样式 */
 .evaluations-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .evaluation-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--color-bg-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
+  padding: 16px;
+  box-shadow: var(--shadow-default);
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid #e2e8f0;
+  transition: all var(--transition-normal);
 }
 
 .evaluation-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-border-muted);
+  box-shadow: var(--shadow-medium);
 }
 
 .card-header {
   display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .score-circle {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 1.2rem;
+  color: var(--color-fg-on-emphasis);
+  font-weight: var(--font-weight-semibold);
+  font-size: 16px;
   flex-shrink: 0;
 }
 
@@ -1057,24 +1084,25 @@ function getScoreColor(score) {
 }
 
 .card-info h3 {
-  color: #1e293b;
-  margin: 0 0 5px 0;
-  font-size: 1.1rem;
+  color: var(--color-fg-default);
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
 }
 
 .card-info p {
-  color: #64748b;
+  color: var(--color-fg-muted);
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 13px;
   line-height: 1.4;
 }
 
 .card-stats {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #e2e8f0;
+  margin-bottom: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-muted);
 }
 
 .stat-item {
@@ -1083,67 +1111,72 @@ function getScoreColor(score) {
 
 .stat-label {
   display: block;
-  color: #64748b;
-  font-size: 0.8rem;
+  color: var(--color-fg-subtle);
+  font-size: 12px;
   margin-bottom: 2px;
 }
 
 .stat-value {
-  color: #1e293b;
-  font-weight: 600;
-  font-size: 0.9rem;
+  color: var(--color-fg-default);
+  font-weight: var(--font-weight-semibold);
+  font-size: 13px;
 }
 
 .stat-value.public {
-  color: #10b981;
+  color: var(--color-success-fg);
 }
 
 .stat-value.private {
-  color: #f59e0b;
+  color: var(--color-warning-fg);
 }
 
 .card-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .btn-edit,
 .btn-delete,
 .btn-like {
-  padding: 6px 12px;
+  padding: 4px 8px;
   border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border-radius: var(--border-radius-medium);
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
 }
 
 .btn-edit {
-  background: #3b82f6;
-  color: white;
+  background: var(--color-btn-primary-bg);
+  color: var(--color-fg-on-emphasis);
+  border: 1px solid var(--color-btn-primary-border);
 }
 
 .btn-edit:hover {
-  background: #2563eb;
+  background: var(--color-btn-primary-hover-bg);
+  border-color: var(--color-btn-primary-hover-border);
 }
 
 .btn-delete {
-  background: #ef4444;
-  color: white;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+  border: 1px solid var(--color-danger-border);
 }
 
 .btn-delete:hover {
-  background: #dc2626;
+  background: var(--color-danger-emphasis);
+  color: var(--color-fg-on-emphasis);
 }
 
 .btn-like {
-  background: #f8fafc;
-  color: #ef4444;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-subtle);
+  color: var(--color-danger-fg);
+  border: 1px solid var(--color-border-default);
 }
 
 .btn-like:hover {
-  background: #fef2f2;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-emphasis);
 }
 
 /* 分页样式 */
@@ -1151,22 +1184,24 @@ function getScoreColor(score) {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px;
-  margin-top: 30px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .page-btn {
-  padding: 8px 16px;
-  background: #f3f4f6;
-  color: #374151;
-  border: none;
-  border-radius: 6px;
+  padding: 6px 12px;
+  background: var(--color-btn-bg);
+  color: var(--color-fg-default);
+  border: 1px solid var(--color-btn-border);
+  border-radius: var(--border-radius-medium);
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all var(--transition-normal);
+  font-size: 14px;
 }
 
 .page-btn:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: var(--color-btn-hover-bg);
+  border-color: var(--color-btn-hover-border);
 }
 
 .page-btn:disabled {
@@ -1175,8 +1210,9 @@ function getScoreColor(score) {
 }
 
 .page-info {
-  color: #64748b;
-  font-weight: 500;
+  color: var(--color-fg-muted);
+  font-weight: var(--font-weight-medium);
+  font-size: 14px;
 }
 
 /* 模态框样式 */
@@ -1186,7 +1222,7 @@ function getScoreColor(score) {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-canvas-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1194,42 +1230,46 @@ function getScoreColor(score) {
 }
 
 .modal-content {
-  background: white;
-  border-radius: 16px;
+  background: var(--color-bg-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
   width: 90%;
   max-width: 1000px;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: var(--shadow-large);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--color-border-muted);
 }
 
 .modal-header h2 {
-  color: #1e293b;
+  color: var(--color-fg-default);
   margin: 0;
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
 }
 
 .modal-body {
-  padding: 30px;
+  padding: 24px;
 }
 
 @media (max-width: 768px) {
   .evaluation-management {
-    padding: 15px;
+    padding: 16px;
   }
   
   .page-header h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
   
   .evaluation-form {
-    padding: 20px;
+    padding: 16px;
   }
   
   .dimensions-grid,
@@ -1240,7 +1280,7 @@ function getScoreColor(score) {
   
   .list-header {
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
   }
   
   .search-input {
@@ -1253,7 +1293,7 @@ function getScoreColor(score) {
   
   .modal-content {
     width: 95%;
-    margin: 20px;
+    margin: 16px;
   }
 }
 </style>

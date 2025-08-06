@@ -81,6 +81,12 @@ func Init() {
 		&model.UserActivity{},
 		&model.UserFollow{},
 		&model.TaskReaction{},
+		// 评价相关模型
+		&model.PaperEvaluation{},
+		&model.EvaluationDimension{},
+		&model.EvaluationMetric{},
+		&model.EvaluationComment{},
+		&model.EvaluationLike{},
 	)
 	if err != nil {
 		panic("自动迁移失败: " + err.Error())

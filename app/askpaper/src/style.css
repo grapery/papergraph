@@ -1,18 +1,81 @@
 :root {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  line-height: 1.6;
+  /* GitHub-inspired design system */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  line-height: 1.5;
   font-weight: 400;
+  font-size: 14px;
 
   color-scheme: light;
-  color: #0f172a;
-  background-color: #f8fafc;
+  color: var(--color-fg-default);
+  background-color: var(--color-bg-default);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Design System Colors */
+  /* Brand colors */
+  --color-brand: #0969da;
+  --color-brand-hover: #0860ca;
+  --color-brand-active: #0550ae;
+  
+  /* Neutral colors (GitHub-inspired) */
+  --color-canvas-default: #ffffff;
+  --color-canvas-subtle: #f6f8fa;
+  --color-canvas-backdrop: rgba(27, 31, 36, 0.5);
+  --color-border-default: #d0d7de;
+  --color-border-muted: #d8dee4;
+  --color-border-transparent: rgba(27, 31, 36, 0);
+  
+  /* Text colors */
+  --color-fg-default: #24292f;
+  --color-fg-muted: #656d76;
+  --color-fg-subtle: #6e7781;
+  --color-fg-on-emphasis: #ffffff;
+  
+  /* Background colors */
+  --color-bg-default: #ffffff;
+  --color-bg-overlay: #ffffff;
+  --color-bg-inset: #f6f8fa;
+  --color-bg-subtle: #f6f8fa;
+  --color-bg-emphasis: #0969da;
+  
+  /* Button colors */
+  --color-btn-bg: #f6f8fa;
+  --color-btn-border: rgba(27, 31, 36, 0.15);
+  --color-btn-hover-bg: #f3f4f6;
+  --color-btn-hover-border: rgba(27, 31, 36, 0.15);
+  --color-btn-active-bg: #ebeced;
+  --color-btn-active-border: rgba(27, 31, 36, 0.15);
+  --color-btn-primary-bg: #2da44e;
+  --color-btn-primary-border: rgba(27, 31, 36, 0.15);
+  --color-btn-primary-hover-bg: #2c974b;
+  --color-btn-primary-hover-border: rgba(27, 31, 36, 0.15);
+  --color-btn-primary-active-bg: #2a8f47;
+  --color-btn-primary-disabled-bg: #94d3a2;
+  
+  /* State colors */
+  --color-success-fg: #1a7f37;
+  --color-success-emphasis: #1f883d;
+  --color-success-bg: #dafbe1;
+  --color-success-border: rgba(27, 31, 36, 0.15);
+  
+  --color-danger-fg: #d1242f;
+  --color-danger-emphasis: #a40e26;
+  --color-danger-bg: #ffd8d3;
+  --color-danger-border: rgba(27, 31, 36, 0.15);
+  
+  --color-warning-fg: #9a6700;
+  --color-warning-emphasis: #bf8700;
+  --color-warning-bg: #fff8c5;
+  --color-warning-border: rgba(27, 31, 36, 0.15);
+  
+  --color-neutral-fg: #656d76;
+  --color-neutral-emphasis: #6e7781;
+  --color-neutral-bg: #eaeef2;
+  --color-neutral-border: rgba(27, 31, 36, 0.15);
+  
+  /* Legacy support */
   --primary-50: #eff6ff;
   --primary-100: #dbeafe;
   --primary-200: #bfdbfe;
@@ -47,10 +110,14 @@
   --error-500: #ef4444;
   --error-600: #dc2626;
 
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-surface: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  --gradient-accent: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-
+  /* Shadow and border radius */
+  --shadow-default: 0 1px 3px rgba(27, 31, 36, 0.12);
+  --shadow-medium: 0 8px 24px rgba(140, 149, 159, 0.2);
+  --shadow-large: 0 12px 48px rgba(140, 149, 159, 0.3);
+  --shadow-focus: 0 0 0 3px rgba(9, 105, 218, 0.3);
+  --border-radius-medium: 6px;
+  --border-radius-large: 8px;
+  
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -67,6 +134,27 @@
   --transition-fast: 150ms ease;
   --transition-normal: 200ms ease;
   --transition-slow: 300ms ease;
+  
+  /* Typography weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Typography sizes */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 32px;
+  
+  /* Line heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
 }
 
 * {
@@ -74,13 +162,13 @@
 }
 
 a {
-  font-weight: 500;
-  color: var(--primary-600);
+  color: var(--color-brand);
   text-decoration: none;
   transition: color var(--transition-normal);
 }
 a:hover {
-  color: var(--primary-700);
+  color: var(--color-brand-hover);
+  text-decoration: underline;
 }
 
 body {
@@ -88,111 +176,148 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--gray-50);
-  background-image: 
-    radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
+  background-color: var(--color-bg-default);
+  color: var(--color-fg-default);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
-  line-height: 1.2;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.25;
   margin-bottom: 0.5rem;
-  color: var(--gray-900);
+  color: var(--color-fg-default);
 }
 
 h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 1rem;
 }
 
 h2 {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 0.75rem;
 }
 
 h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 0.5rem;
 }
 
-button {
-  border-radius: var(--radius);
-  border: 1px solid transparent;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: inherit;
-  background-color: var(--primary-600);
-  color: white;
+/* GitHub-style buttons */
+.btn {
+  padding: 5px 16px;
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  white-space: nowrap;
+  vertical-align: middle;
   cursor: pointer;
+  user-select: none;
+  border: 1px solid;
+  border-radius: var(--border-radius-medium);
+  appearance: none;
   transition: all var(--transition-normal);
-  outline: none;
-  position: relative;
-  overflow: hidden;
-}
-button:hover {
-  background-color: var(--primary-700);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-button:active {
-  transform: translateY(0);
-}
-button:focus,
-button:focus-visible {
-  outline: 2px solid var(--primary-500);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
-button:disabled {
-  background-color: var(--gray-400);
+.btn:disabled {
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
+/* Primary button */
+.btn-primary {
+  color: var(--color-fg-on-emphasis);
+  background-color: var(--color-btn-primary-bg);
+  border-color: var(--color-btn-primary-border);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-btn-primary-hover-bg);
+  border-color: var(--color-btn-primary-hover-border);
+}
+
+.btn-primary:active:not(:disabled) {
+  background-color: var(--color-btn-primary-active-bg);
+  border-color: var(--color-btn-primary-active-border);
+}
+
+/* Default button */
+.btn-default {
+  color: var(--color-fg-default);
+  background-color: var(--color-btn-bg);
+  border-color: var(--color-btn-border);
+}
+
+.btn-default:hover:not(:disabled) {
+  background-color: var(--color-btn-hover-bg);
+  border-color: var(--color-btn-hover-border);
+}
+
+.btn-default:active:not(:disabled) {
+  background-color: var(--color-btn-active-bg);
+  border-color: var(--color-btn-active-border);
+}
+
+/* Danger button */
+.btn-danger {
+  color: var(--color-danger-fg);
+  background-color: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
+}
+
+.btn-danger:hover:not(:disabled) {
+  color: var(--color-fg-on-emphasis);
+  background-color: var(--color-danger-emphasis);
+  border-color: var(--color-danger-emphasis);
+}
+
+/* Form controls */
 input, textarea, select {
-  border: 1px solid var(--gray-300);
-  border-radius: var(--radius);
-  padding: 0.75rem;
-  font-size: 1rem;
-  font-family: inherit;
-  transition: all var(--transition-normal);
+  padding: 5px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-fg-default);
+  background-color: var(--color-bg-overlay);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
   outline: none;
-  background-color: white;
+  transition: all var(--transition-normal);
+  font-family: inherit;
 }
 
 input:focus, textarea:focus, select:focus {
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background-color: var(--primary-50);
+  border-color: var(--color-brand);
+  outline: 2px solid var(--shadow-focus);
+  outline-offset: -2px;
+  box-shadow: var(--shadow-focus);
 }
 
 input::placeholder, textarea::placeholder {
-  color: var(--gray-400);
+  color: var(--color-fg-subtle);
 }
 
+/* Card component */
 .card {
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid var(--gray-200);
+  background: var(--color-canvas-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
+  padding: 16px;
+  margin-bottom: 16px;
   transition: all var(--transition-normal);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  border-color: var(--color-border-muted);
+  box-shadow: var(--shadow-default);
 }
+
 
 #app {
   max-width: 100%;

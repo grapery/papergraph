@@ -281,32 +281,32 @@ function retryLoad() {
 </script>
 <style scoped>
 .explore-page {
-  padding: 2rem 0;
-  max-width: 1000px;
+  padding: 24px 0;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .explore-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
 }
 
 .explore-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg-default);
+  margin-bottom: 8px;
 }
 
 .explore-desc {
-  font-size: 1.125rem;
-  color: #6b7280;
+  font-size: 16px;
+  color: var(--color-fg-muted);
   max-width: 600px;
   margin: 0 auto;
 }
 
 .search-bar {
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
 }
 
 .search-input-wrapper {
@@ -317,95 +317,98 @@ function retryLoad() {
 
 .search-icon {
   position: absolute;
-  left: 1rem;
-  color: #9ca3af;
-  font-size: 1.1rem;
+  left: 12px;
+  color: var(--color-fg-subtle);
+  font-size: 16px;
   z-index: 2;
+  pointer-events: none;
 }
 
 .search-input {
   width: 100%;
-  padding: 1rem 1.5rem 1rem 3rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  background: #fff;
-  font-size: 1rem;
-  color: #1f2937;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 8px 16px 8px 40px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-medium);
+  background: var(--color-bg-overlay);
+  font-size: 14px;
+  color: var(--color-fg-default);
+  transition: all var(--transition-normal);
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--color-brand);
+  background: var(--color-bg-default);
+  box-shadow: var(--shadow-focus);
 }
 
 .search-clear-btn {
   position: absolute;
-  right: 1rem;
+  right: 12px;
   background: none;
   border: none;
-  color: #9ca3af;
-  font-size: 1.2rem;
+  color: var(--color-fg-subtle);
+  font-size: 16px;
   cursor: pointer;
-  padding: 0.25rem;
+  padding: 4px;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
   z-index: 2;
 }
 
 .search-clear-btn:hover {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-muted);
 }
 
 .explore-tabs {
   display: flex;
-  gap: 2rem;
+  gap: 8px;
   align-items: center;
   margin-bottom: 0;
-  padding-left: 0.5rem;
-  border-bottom: 2px solid #f3f4f6;
+  padding-left: 0;
+  border-bottom: 1px solid var(--color-border-muted);
 }
 
 .tab-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  color: #6b7280;
-  font-weight: 500;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--color-fg-muted);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  padding: 0.75rem 0;
+  padding: 8px 16px;
   border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal);
   white-space: nowrap;
+  border-radius: var(--border-radius-medium) var(--border-radius-medium) 0 0;
 }
 
 .tab-item:hover {
-  color: #374151;
+  color: var(--color-fg-default);
+  background-color: var(--color-bg-subtle);
 }
 
 .tab-item.active {
-  color: #3b82f6;
-  border-bottom-color: #3b82f6;
-  font-weight: 600;
+  color: var(--color-fg-default);
+  border-bottom-color: var(--color-brand);
+  background-color: var(--color-bg-default);
 }
 
 .tab-icon {
-  font-size: 1.25rem;
+  font-size: 16px;
 }
 
 .tab-divider {
   height: 1px;
-  background: #e5e7eb;
-  margin: 0 0 2rem 0;
+  background: var(--color-border-muted);
+  margin: 0 0 24px 0;
 }
 
 .feed-list {

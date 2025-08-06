@@ -2,7 +2,6 @@ package main
 
 import (
 	"papergraph/config"
-	"papergraph/model"
 	"papergraph/router"
 	"papergraph/service"
 )
@@ -11,30 +10,6 @@ func main() {
 	// 初始化配置
 	config.Init()
 	defer config.Logger.Sync()
-
-	// 自动迁移数据库模型
-	err := config.DB.AutoMigrate(
-		&model.User{},
-		&model.Paper{},
-		&model.AnalysisTask{},
-		&model.AnalysisResult{},
-		&model.Comment{},
-		&model.Like{},
-		&model.Follow{},
-		&model.UserBadge{},
-		&model.UserActivity{},
-		&model.Product{},
-		&model.PaymentRecord{},
-		&model.UserSubscription{},
-		&model.PaperEvaluation{},
-		&model.EvaluationDimension{},
-		&model.EvaluationMetric{},
-		&model.EvaluationComment{},
-		&model.EvaluationLike{},
-	)
-	if err != nil {
-		config.Logger.Fatal("Failed to migrate database:", err)
-	}
 
 	// 初始化服务
 	subSvc := service.NewSubscriptionService(config.DB)
