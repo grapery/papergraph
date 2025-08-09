@@ -35,59 +35,183 @@ function viewAnalysis() {
 .feed-card {
   display: flex;
   align-items: flex-start;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px 0 #f3f4f6;
-  margin-bottom: 28px;
-  padding: 18px 20px;
-  gap: 28px;
+  background: var(--background-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  gap: var(--spacing-xl);
   min-height: 120px;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
 }
+
+.feed-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-secondary), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.feed-card:hover {
+  border-color: var(--border-secondary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.feed-card:hover::before {
+  opacity: 1;
+}
+
 .feed-card-img {
   flex-shrink: 0;
   width: 120px;
   height: 100px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  background: #f3f4f6;
+  background: var(--background-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
+
+.feed-card-img::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-subtle);
+  opacity: 0.1;
+  transition: opacity var(--transition-normal);
+}
+
+.feed-card:hover .feed-card-img::before {
+  opacity: 0.2;
+}
+
 .feed-card-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--transition-normal);
 }
+
+.feed-card:hover .feed-card-img img {
+  transform: scale(1.05);
+}
+
 .feed-card-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
+
 .feed-card-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #222;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+  transition: color var(--transition-normal);
+  line-height: var(--line-height-tight);
 }
+
+.feed-card:hover .feed-card-title {
+  color: var(--brand-primary);
+}
+
 .feed-card-summary {
-  color: #6b7280;
-  font-size: 0.98rem;
-  margin-bottom: 16px;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+  line-height: var(--line-height-relaxed);
 }
+
 .view-btn {
   width: 120px;
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 0;
-  font-size: 1rem;
+  background: var(--brand-primary);
+  color: var(--text-inverse);
+  border: 1px solid var(--brand-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) 0;
+  font-size: var(--font-size-base);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all var(--transition-normal);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--shadow-sm);
 }
+
 .view-btn:hover {
-  background: #1d4ed8;
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.view-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 768px) {
+  .feed-card {
+    flex-direction: column;
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .feed-card-img {
+    width: 100%;
+    height: 160px;
+  }
+  
+  .feed-card-content {
+    width: 100%;
+  }
+  
+  .feed-card-title {
+    font-size: var(--font-size-base);
+  }
+  
+  .feed-card-summary {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .view-btn {
+    width: 100%;
+    padding: var(--spacing-sm) 0;
+    font-size: var(--font-size-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .feed-card {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+  
+  .feed-card-img {
+    height: 140px;
+  }
+  
+  .feed-card-title {
+    font-size: var(--font-size-sm);
+  }
+  
+  .feed-card-summary {
+    font-size: var(--font-size-xs);
+  }
 }
 </style> 

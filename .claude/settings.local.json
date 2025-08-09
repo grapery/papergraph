@@ -16,7 +16,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(kill:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebFetch(domain:expo.dev)"
     ],
     "deny": []
   }
