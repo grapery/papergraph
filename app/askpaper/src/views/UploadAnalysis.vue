@@ -1714,6 +1714,7 @@ function formatFileSize(bytes) {
 }
 </style>
 
+<style scoped>
 .upload-section {
   display: flex;
   flex-direction: column;

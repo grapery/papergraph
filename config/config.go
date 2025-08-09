@@ -52,7 +52,7 @@ func Init() {
 		Host:     "localhost",
 		Port:     3306,
 		User:     "root",
-		Password: "123456789",
+		Password: "12345678",
 		DBName:   "papergraph",
 		Charset:  "utf8mb4",
 	}
@@ -67,13 +67,13 @@ func Init() {
 
 	// 自动迁移所有模型
 	err = db.AutoMigrate(
-		&model.User{}, 
-		&model.Paper{}, 
-		&model.AnalysisTask{}, 
-		&model.AnalysisResult{}, 
-		&model.Comment{}, 
-		&model.Product{}, 
-		&model.UserSubscription{}, 
+		&model.User{},
+		&model.Paper{},
+		&model.AnalysisTask{},
+		&model.AnalysisResult{},
+		&model.Comment{},
+		&model.Product{},
+		&model.UserSubscription{},
 		&model.PaymentRecord{},
 		&model.BadgeTemplate{},
 		&model.UserBadge{},
@@ -92,10 +92,10 @@ func Init() {
 		panic("自动迁移失败: " + err.Error())
 	}
 	fmt.Println("数据库连接和自动迁移完成")
-	
+
 	// 初始化默认产品数据
 	initializeProducts()
-	
+
 	// 初始化默认奖章模板数据
 	initializeBadgeTemplates()
 }
@@ -105,7 +105,7 @@ func initializeProducts() {
 	// 检查是否已有产品数据
 	var count int64
 	DB.Model(&model.Product{}).Count(&count)
-	
+
 	if count == 0 {
 		// 创建默认产品
 		products := []model.Product{
@@ -125,7 +125,7 @@ func initializeProducts() {
 				Duration: 1, // 1个月
 			},
 		}
-		
+
 		for _, product := range products {
 			if err := DB.Create(&product).Error; err != nil {
 				fmt.Printf("创建产品失败: %s\n", err.Error())
@@ -144,7 +144,7 @@ func initializeBadgeTemplates() {
 	// 检查是否已有奖章模板数据
 	var count int64
 	DB.Model(&model.BadgeTemplate{}).Count(&count)
-	
+
 	if count == 0 {
 		// 创建默认奖章模板
 		badgeTemplates := []model.BadgeTemplate{
@@ -185,7 +185,7 @@ func initializeBadgeTemplates() {
 				Level:       4,
 				Category:    "analysis",
 			},
-			
+
 			// 社交类奖章
 			{
 				Type:        "popular_analyst",
@@ -232,7 +232,7 @@ func initializeBadgeTemplates() {
 				Level:       2,
 				Category:    "social",
 			},
-			
+
 			// 分享类奖章
 			{
 				Type:        "knowledge_sharer",
@@ -252,7 +252,7 @@ func initializeBadgeTemplates() {
 				Level:       2,
 				Category:    "sharing",
 			},
-			
+
 			// 订阅类奖章
 			{
 				Type:        "premium_member",
@@ -273,7 +273,7 @@ func initializeBadgeTemplates() {
 				Category:    "subscription",
 			},
 		}
-		
+
 		for _, template := range badgeTemplates {
 			if err := DB.Create(&template).Error; err != nil {
 				fmt.Printf("创建奖章模板失败: %s\n", err.Error())

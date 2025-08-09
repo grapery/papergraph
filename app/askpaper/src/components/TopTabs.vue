@@ -28,11 +28,12 @@ const tabs = [
 <style scoped>
 .explore-tabs {
   display: flex;
-  gap: var(--spacing-2xl);
+  gap: var(--spacing-xl);
   margin-bottom: var(--spacing-lg);
   border-bottom: 1px solid var(--border-primary);
   padding-bottom: var(--spacing-xs);
   position: relative;
+  align-items: center;
 }
 
 .explore-tabs::before {
@@ -54,15 +55,16 @@ const tabs = [
 .explore-tabs button {
   background: none;
   border: none;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 0 0 var(--spacing-sm) 0;
+  padding: var(--spacing-md) 0 var(--spacing-sm) 0;
   border-bottom: 2px solid transparent;
   transition: all var(--transition-normal);
   font-weight: var(--font-weight-normal);
   position: relative;
   outline: none;
+  white-space: nowrap;
 }
 
 .explore-tabs button::after {
@@ -80,12 +82,16 @@ const tabs = [
 
 .explore-tabs button:hover {
   color: var(--text-primary);
+  background: var(--background-secondary);
+  border-radius: var(--radius-md);
 }
 
 .explore-tabs button.active {
   color: var(--brand-primary);
   font-weight: var(--font-weight-semibold);
   border-bottom: 2px solid var(--brand-primary);
+  background: var(--background-secondary);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .explore-tabs button.active::after {
@@ -106,8 +112,8 @@ const tabs = [
   }
   
   .explore-tabs button {
-    font-size: var(--font-size-base);
-    padding: 0 0 var(--spacing-xs) 0;
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm) 0 var(--spacing-xs) 0;
   }
 }
 
@@ -117,12 +123,18 @@ const tabs = [
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: var(--spacing-xs);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .explore-tabs::-webkit-scrollbar {
+    display: none;
   }
   
   .explore-tabs button {
     font-size: var(--font-size-sm);
     white-space: nowrap;
-    padding: 0 var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
   }
 }
 </style> 

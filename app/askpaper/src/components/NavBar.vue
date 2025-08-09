@@ -437,6 +437,7 @@ onUnmounted(() => {
   backdrop-filter: blur(12px);
   z-index: var(--z-fixed);
   transition: all var(--transition-normal);
+  box-shadow: var(--shadow-xs);
 }
 
 .navbar:hover {
@@ -446,7 +447,9 @@ onUnmounted(() => {
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-lg);
+  min-width: 0;
+  flex-shrink: 0;
 }
 
 /* Logo styling */
@@ -547,7 +550,8 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   max-width: 400px;
-  margin: 0 var(--spacing-xl);
+  margin: 0 var(--spacing-lg);
+  min-width: 0;
 }
 
 .search-container {
@@ -610,7 +614,8 @@ onUnmounted(() => {
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
 }
 
 .user-area {
@@ -667,7 +672,7 @@ onUnmounted(() => {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  max-width: 120px;
+  max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1087,7 +1092,7 @@ onUnmounted(() => {
   }
   
   .navbar-left {
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
   }
   
   .logo-text {
@@ -1122,6 +1127,10 @@ onUnmounted(() => {
   .avatar-indicator {
     width: 6px;
     height: 6px;
+  }
+  
+  .navbar-right {
+    gap: var(--spacing-xs);
   }
 }
 

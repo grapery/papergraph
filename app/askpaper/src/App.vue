@@ -14,7 +14,7 @@ import NavBar from './components/NavBar.vue'
 
 <style scoped>
 .main-content {
-  min-height: calc(100vh - 70px);
-  padding-top: 70px;
+  min-height: calc(100vh - 64px);
+  padding-top: 64px;
 }
 </style>
