@@ -408,16 +408,15 @@ function goToUpload() {
 /* Modern Expo.dev-inspired styling */
 .explore-page {
   min-height: 100vh;
-  background: var(--background-default);
+  background: var(--background-primary);
 }
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-secondary) 100%);
+  background: var(--background-primary);
   border-bottom: 1px solid var(--border-primary);
   padding: var(--spacing-2xl) 0 var(--spacing-xl) 0;
   position: relative;
-  overflow: hidden;
 }
 
 .hero-section::before {
@@ -476,10 +475,6 @@ function goToUpload() {
   color: var(--text-primary);
   margin: 0 0 var(--spacing-md) 0;
   line-height: var(--line-height-tight);
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .hero-subtitle {
@@ -507,22 +502,19 @@ function goToUpload() {
   position: relative;
   display: flex;
   align-items: center;
-  background: var(--background-primary);
+  background: var(--background-secondary);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
   transition: all var(--transition-normal);
-  box-shadow: var(--shadow-sm);
 }
 
 .search-input-wrapper:hover {
   border-color: var(--border-secondary);
-  box-shadow: var(--shadow-md);
 }
 
 .search-input-wrapper:focus-within {
   border-color: var(--border-focus);
-  box-shadow: var(--focus-ring);
   background: var(--background-primary);
 }
 
@@ -625,7 +617,7 @@ function goToUpload() {
 /* Feed Grid */
 .feed-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--spacing-lg);
   animation: fadeIn 0.5s ease-out;
 }

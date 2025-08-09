@@ -67,35 +67,14 @@ const tabs = [
   white-space: nowrap;
 }
 
-.explore-tabs button::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--brand-primary);
-  border-radius: var(--radius-full);
-  transform: scaleX(0);
-  transition: transform var(--transition-normal);
-}
-
 .explore-tabs button:hover {
   color: var(--text-primary);
-  background: var(--background-secondary);
-  border-radius: var(--radius-md);
 }
 
 .explore-tabs button.active {
   color: var(--brand-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   border-bottom: 2px solid var(--brand-primary);
-  background: var(--background-secondary);
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-}
-
-.explore-tabs button.active::after {
-  transform: scaleX(1);
 }
 
 .explore-tabs button:focus-visible {

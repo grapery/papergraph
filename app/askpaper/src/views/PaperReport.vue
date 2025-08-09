@@ -301,6 +301,15 @@ const error = ref(null)
 const analysisData = ref(null)
 const evaluationData = ref(null)
 
+// 圆环进度图参数（修复未定义导致渲染失败的问题）
+const circleRadius = 64
+const circumference = 2 * Math.PI * circleRadius
+const dashOffset = computed(() => {
+  const score = getScoreNumber(analysisData.value?.overallScore)
+  const clamped = Math.min(1, Math.max(0, score / 10))
+  return circumference * (1 - clamped)
+})
+
 // Tab configuration
 const tabs = [
   { key: 'overview', label: 'Overview', icon: '📊' },

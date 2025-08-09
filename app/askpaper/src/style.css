@@ -1,6 +1,6 @@
 :root {
   /* Expo.dev-inspired modern design system */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
   font-weight: 400;
   font-size: 16px;
@@ -19,6 +19,7 @@
   --brand-secondary: #ffffff;
   --brand-accent: #000000;
   --brand-hover: #333333;
+  --brand-code: #6366f1;
   
   /* Modern gradient definitions */
   --gradient-primary: linear-gradient(135deg, #000000 0%, #333333 100%);
@@ -32,12 +33,14 @@
   --background-tertiary: #f1f3f5;
   --background-quaternary: #e9ecef;
   --background-overlay: rgba(255, 255, 255, 0.95);
+  --background-code: #f8f9fa;
   
-  --text-primary: #212529;
+  --text-primary: #000000;
   --text-secondary: #495057;
   --text-tertiary: #6c757d;
   --text-quaternary: #adb5bd;
   --text-inverse: #ffffff;
+  --text-code: #e11d48;
   
   --border-primary: #dee2e6;
   --border-secondary: #e9ecef;
@@ -1835,6 +1838,66 @@ input::placeholder, textarea::placeholder {
   background-color: var(--info-50);
   border-color: var(--info-200);
   color: var(--info-800);
+}
+
+/* Terminal-style code blocks (Expo.dev inspired) */
+.terminal-code {
+  background: var(--background-code);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+  position: relative;
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.terminal-code::before {
+  content: '';
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.terminal-code::before {
+  content: '● ● ●';
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.2em;
+}
+
+.terminal-code pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  overflow-x: auto;
+}
+
+.terminal-code code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Inline code styling */
+code {
+  background: var(--background-code);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Consolas', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: var(--text-code);
+  display: inline-block;
 }
 
 /* Modal system */

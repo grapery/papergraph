@@ -286,6 +286,8 @@ function viewAnalysis() {
 <style scoped>
 .enhanced-feed-card {
   display: flex;
+  /* 统一为竖排卡片布局，避免不同容器宽度下的错位 */
+  flex-direction: column;
   background: var(--background-primary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
@@ -318,8 +320,8 @@ function viewAnalysis() {
 
 .feed-card-img {
   flex-shrink: 0;
-  width: 200px;
-  height: 150px;
+  width: 100%;
+  height: 200px;
   overflow: hidden;
   background: var(--background-secondary);
   position: relative;
@@ -429,6 +431,11 @@ function viewAnalysis() {
   margin-bottom: var(--spacing-lg);
   flex: 1;
   font-size: var(--font-size-sm);
+  /* 限制摘要行数，保持卡片高度一致 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .reaction-buttons {
@@ -690,10 +697,6 @@ function viewAnalysis() {
 }
 
 @media (max-width: 768px) {
-  .enhanced-feed-card {
-    flex-direction: column;
-  }
-  
   .feed-card-img {
     width: 100%;
     height: 200px;
