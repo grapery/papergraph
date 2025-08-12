@@ -1,0 +1,10 @@
+.idea/*
+.DS_Store
+.vscode
+dev.session.sql
+.idea/vcs.xml
+papergraph
+main
+.node
+.next
+node_modules
