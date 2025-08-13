@@ -161,6 +161,87 @@ export interface ProfileForm {
   bio?: string;
 }
 
+// User Activity types
+export interface UserActivity {
+  id: number;
+  user_id: number;
+  user: User;
+  event_type: string;
+  target_type: string;
+  target_id: number;
+  title?: string;
+  content?: string;
+  metadata?: Record<string, any>;
+  visibility: 'public' | 'private' | 'friends';
+  like_count: number;
+  comment_count: number;
+  created_at: string;
+  updated_at: string;
+  target_info?: any;
+}
+
+export interface CreateActivityRequest {
+  user_id: number;
+  event_type: string;
+  target_type: string;
+  target_id: number;
+  title?: string;
+  content?: string;
+  metadata?: Record<string, any>;
+  visibility?: 'public' | 'private' | 'friends';
+}
+
+export interface ActivityQuery {
+  user_id?: number;
+  event_type?: string;
+  target_type?: string;
+  target_id?: number;
+  visibility?: string;
+  page?: number;
+  page_size?: number;
+}
+
+export interface ActivityResponse {
+  activities: UserActivity[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+// Event types
+export const EVENT_TYPES = {
+  PAPER_ANALYZED: 'paper_analyzed',
+  PAPER_LIKED: 'paper_liked',
+  PAPER_RECOMMENDED: 'paper_recommended',
+  PAPER_SHARED: 'paper_shared',
+  ANALYSIS_CREATED: 'analysis_created',
+  ANALYSIS_UPDATED: 'analysis_updated',
+  ANALYSIS_COMPLETED: 'analysis_completed',
+  EVALUATION_CREATED: 'evaluation_created',
+  EVALUATION_UPDATED: 'evaluation_updated',
+  EVALUATION_LIKED: 'evaluation_liked',
+  COMMENT_CREATED: 'comment_created',
+  COMMENT_LIKED: 'comment_liked',
+  COMMENT_REPLIED: 'comment_replied',
+  BADGE_EARNED: 'badge_earned',
+  LEVEL_UP: 'level_up',
+  FOLLOW_USER: 'follow_user',
+  UNFOLLOW_USER: 'unfollow_user',
+} as const;
+
+// Target types
+export const TARGET_TYPES = {
+  PAPER: 'paper',
+  ANALYSIS: 'analysis',
+  EVALUATION: 'evaluation',
+  COMMENT: 'comment',
+  USER: 'user',
+  BADGE: 'badge',
+} as const;
+
 // API response types
 export interface ApiResponse<T> {
   data: T;

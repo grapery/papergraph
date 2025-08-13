@@ -53,3 +53,13 @@ func OkWithMsg(c *gin.Context, msg string) {
 func Now() time.Time {
 	return time.Now()
 }
+
+// Pagination 分页信息
+type Pagination struct {
+	Page       int `json:"page"`
+	PageSize   int `json:"page_size"`
+	Total      int64 `json:"total"`
+	TotalPages int   `json:"total_pages"`
+	HasNext    bool  `json:"has_next"`
+	HasPrev    bool  `json:"has_prev"`
+}

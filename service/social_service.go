@@ -43,10 +43,10 @@ func (s *SocialService) FollowUser(followerID, followingID uint) error {
 	// 记录关注活动
 	activity := model.UserActivity{
 		UserID:      followerID,
-		ActivityType: "follow",
+		EventType:   model.EventFollowUser,
 		TargetID:    followingID,
-		TargetType:  "user",
-		Content:     "关注了用户",
+		TargetType:  model.TargetUser,
+		Title:       "关注了用户",
 		CreatedAt:   time.Now(),
 	}
 
@@ -189,12 +189,13 @@ func (s *SocialService) GetUserAnalysisFeed(userID uint, limit, offset int) ([]m
 }
 
 // AddUserActivity 添加用户活动记录
-func (s *SocialService) AddUserActivity(userID uint, activityType, targetType string, targetID uint, content string) error {
+func (s *SocialService) AddUserActivity(userID uint, eventType, targetType string, targetID uint, title, content string) error {
 	activity := model.UserActivity{
 		UserID:      userID,
-		ActivityType: activityType,
+		EventType:   eventType,
 		TargetID:    targetID,
 		TargetType:  targetType,
+		Title:       title,
 		Content:     content,
 		CreatedAt:   time.Now(),
 	}

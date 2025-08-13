@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// InitRouter 初始化路由，支持注入订阅服务和奖章服务
-func InitRouter(subSvc *service.SubscriptionService, badgeSvc *service.BadgeService) *gin.Engine {
+// InitRouter 初始化路由，支持注入订阅服务、奖章服务和用户活动服务
+func InitRouter(subSvc *service.SubscriptionService, badgeSvc *service.BadgeService, activitySvc *service.UserActivityService) *gin.Engine {
 	r := gin.Default()
 
 	// 1. VUE静态资源服务，服务前端构建产物（assets、favicon等）
@@ -70,6 +70,15 @@ func InitRouter(subSvc *service.SubscriptionService, badgeSvc *service.BadgeServ
 	r.GET("/papers/:paperId/evaluations/statistics", evalHandler.GetEvaluationStatistics)
 	r.GET("/evaluations/top", evalHandler.GetTopEvaluations)
 	r.GET("/evaluations/search", evalHandler.SearchEvaluations)
+
+	// 用户活动事件接口
+	activityHandler := handler.NewUserActivityHandler(activitySvc)
+	activityHandler.RegisterRoutes(auth)
+	
+	// 公开的用户活动事件接口（无需认证）
+	r.GET("/users/:user_id/activities", activityHandler.GetUserActivities)
+	r.GET("/users/:user_id/activities/stats", activityHandler.GetUserActivityStats)
+	r.GET("/feed", activityHandler.GetFeed)
 
 	// 2. SPA fallback：所有未命中后端API的路由都返回index.html，由VUE前端路由处理
 	r.NoRoute(func(c *gin.Context) {

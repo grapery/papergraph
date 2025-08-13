@@ -8,6 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// UserIDKey 上下文中用户ID的键名
+const UserIDKey = "user_id"
+
 // AuthMiddleware JWT鉴权中间件
 // 校验Authorization头部的Bearer Token，将用户信息注入上下文
 func AuthMiddleware() gin.HandlerFunc {

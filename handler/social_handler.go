@@ -304,7 +304,7 @@ func (h *SocialHandler) ReactToTask(c *gin.Context) {
 			content = "取消分享了分析"
 		}
 
-		h.socialService.AddUserActivity(userID, "unreact", "task", uint(taskID), content)
+		h.socialService.AddUserActivity(userID, "unreact", "task", uint(taskID), "取消评价", content)
 
 		c.JSON(http.StatusOK, gin.H{"code": 0, "message": "取消评价成功"})
 		return
@@ -339,7 +339,7 @@ func (h *SocialHandler) ReactToTask(c *gin.Context) {
 		content = "分享了分析"
 	}
 
-	h.socialService.AddUserActivity(userID, "react", "task", uint(taskID), content)
+	h.socialService.AddUserActivity(userID, "react", "task", uint(taskID), "评价", content)
 
 	// 更新用户统计
 	updates := map[string]interface{}{}

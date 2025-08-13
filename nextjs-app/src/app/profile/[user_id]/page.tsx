@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@/hooks/useAuth';
 import { useAuth } from '@/hooks/useAuth';
 import { useAppStore } from '@/store';
+import { activityApi } from '@/lib/api';
+import ActivityFeed from '@/components/ActivityFeed';
 import { 
   formatDate, 
   formatTime, 
@@ -33,6 +35,7 @@ import {
 export default function UserProfilePage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user: currentUser } = useAuth();
   const { user, stats, badges, activities, loading } = useUser(Number(params.user_id));
   const { setLoading, setError } = useAppStore();
@@ -46,9 +49,32 @@ export default function UserProfilePage() {
     field: '',
     bio: '',
   });
+  const [activityStats, setActivityStats] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState('overview');
 
   const isOwnProfile = currentUser?.id === Number(params.user_id);
   const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      loadActivityStats();
+    }
+    
+    // Check URL params for tab
+    const tab = searchParams.get('tab');
+    if (tab && ['overview', 'activities', 'badges'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [user, searchParams]);
+
+  const loadActivityStats = async () => {
+    try {
+      const stats = await activityApi.getUserStats(Number(params.user_id));
+      setActivityStats(stats);
+    } catch (error) {
+      console.error('Failed to load activity stats:', error);
+    }
+  };
 
   const positions = [
     { value: 'undergraduate', label: '本科生' },
@@ -256,9 +282,74 @@ export default function UserProfilePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
+        {/* Activity Stats */}
+        {activityStats && (
+          <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">活动统计</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-blue-600">{activityStats.total || 0}</p>
+                <p className="text-sm text-gray-600">总活动数</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-green-600">{activityStats.recent_7_days || 0}</p>
+                <p className="text-sm text-gray-600">近7天</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-purple-600">{activityStats.paper_analyzed || 0}</p>
+                <p className="text-sm text-gray-600">分析论文</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-yellow-600">{activityStats.evaluation_created || 0}</p>
+                <p className="text-sm text-gray-600">创建评价</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab Navigation */}
+        <div className="bg-white rounded-lg shadow-sm mb-8">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-8 px-6">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'overview'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                概览
+              </button>
+              <button
+                onClick={() => setActiveTab('activities')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'activities'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                动态
+              </button>
+              <button
+                onClick={() => setActiveTab('badges')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'badges'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                徽章 ({badges.length})
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'overview' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column */}
+            <div className="lg:col-span-2 space-y-8">
             {/* Bio Section */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h2 className="text-xl font-bold text-gray-900 mb-4">个人简介</h2>
@@ -371,6 +462,55 @@ export default function UserProfilePage() {
             </div>
           </div>
         </div>
+        )}
+
+        {/* Activities Tab */}
+        {activeTab === 'activities' && (
+          <ActivityFeed userId={Number(params.user_id)} showFilters={true} />
+        )}
+
+        {/* Badges Tab */}
+        {activeTab === 'badges' && (
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">获得的徽章</h2>
+            {badges.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {badges.map((badge) => (
+                  <div key={badge.id} className="bg-gray-50 rounded-lg p-6 text-center hover:shadow-md transition-shadow">
+                    <div className="text-4xl mb-3">{getBadgeIcon(badge.type)}</div>
+                    <h3 className="font-semibold text-gray-900 mb-2">{badge.name}</h3>
+                    <p className="text-sm text-gray-600 mb-3">{badge.description}</p>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-500">{formatDate(badge.created_at)}</span>
+                      <span className={`px-2 py-1 rounded-full ${
+                        badge.rarity === 'common' ? 'bg-gray-100 text-gray-600' :
+                        badge.rarity === 'rare' ? 'bg-blue-100 text-blue-600' :
+                        badge.rarity === 'epic' ? 'bg-purple-100 text-purple-600' :
+                        'bg-yellow-100 text-yellow-600'
+                      }`}>
+                        {getRarityLabel(badge.rarity)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">🏆</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">还没有获得任何徽章</h3>
+                <p className="text-gray-600 mb-4">开始分析论文来获得你的第一个徽章吧</p>
+                {isOwnProfile && (
+                  <button 
+                    onClick={() => router.push('/dashboard')}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    开始分析
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Edit Profile Modal */}

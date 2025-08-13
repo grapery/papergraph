@@ -149,7 +149,7 @@ export default function AnalysisDashboard({ analysis }: { analysis: any }) {
   const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    indexAxis: barType === 'horizontal' ? 'y' : 'x',
+    indexAxis: barType === 'horizontal' ? 'y' as const : 'x' as const,
     scales: {
       y: {
         beginAtZero: true,
@@ -228,7 +228,7 @@ export default function AnalysisDashboard({ analysis }: { analysis: any }) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'bottom',
+        position: 'bottom' as const,
         labels: {
           padding: 20,
           usePointStyle: true,
@@ -296,9 +296,10 @@ export default function AnalysisDashboard({ analysis }: { analysis: any }) {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">综合评分</h2>
             <div className={cn('flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium', getTrendClass(analysis.trend))}>
-              {getTrendIcon(analysis.trend) && (
-                <getTrendIcon(analysis.trend) className="w-4 h-4" />
-              )}
+              {(() => {
+                const Icon = getTrendIcon(analysis.trend);
+                return Icon && <Icon className="w-4 h-4" />;
+              })()}
               <span>{analysis.trend > 0 ? `+${analysis.trend}%` : analysis.trend < 0 ? `${analysis.trend}%` : '0%'}</span>
             </div>
           </div>

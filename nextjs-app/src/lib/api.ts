@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAppStore } from '@/store';
+import type { CreateActivityRequest, ActivityQuery, ActivityResponse, UserActivity } from '@/types';
 
 // Create axios instance
 const api = axios.create({
@@ -43,5 +44,82 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// User Activity API
+export const activityApi = {
+  // Create activity
+  create: async (data: CreateActivityRequest) => {
+    const response = await api.post('/api/activities', data);
+    return response.data;
+  },
+
+  // Get activities with filters
+  getActivities: async (query?: ActivityQuery) => {
+    const response = await api.get('/api/activities', { params: query });
+    return response.data as ActivityResponse;
+  },
+
+  // Get user activities
+  getUserActivities: async (userId: number, query?: ActivityQuery) => {
+    const response = await api.get(`/api/users/${userId}/activities`, { params: query });
+    return response.data as ActivityResponse;
+  },
+
+  // Get my activities
+  getMyActivities: async (query?: ActivityQuery) => {
+    const response = await api.get('/api/me/activities', { params: query });
+    return response.data as ActivityResponse;
+  },
+
+  // Get activity by ID
+  getActivityById: async (id: number) => {
+    const response = await api.get(`/api/activities/${id}`);
+    return response.data;
+  },
+
+  // Delete activity
+  deleteActivity: async (id: number) => {
+    const response = await api.delete(`/api/activities/${id}`);
+    return response.data;
+  },
+
+  // Get user activity stats
+  getUserStats: async (userId: number) => {
+    const response = await api.get(`/api/users/${userId}/activities/stats`);
+    return response.data;
+  },
+
+  // Get feed
+  getFeed: async (query?: ActivityQuery) => {
+    const response = await api.get('/api/feed', { params: query });
+    return response.data as ActivityResponse;
+  },
+};
+
+// Helper function to create activity events
+export const createActivity = async (
+  eventType: string,
+  targetType: string,
+  targetId: number,
+  title?: string,
+  content?: string,
+  metadata?: Record<string, any>
+) => {
+  const user = JSON.parse(localStorage.getItem('mock_user') || '{}');
+  if (!user.id) {
+    throw new Error('User not authenticated');
+  }
+
+  return await activityApi.create({
+    user_id: user.id,
+    event_type: eventType,
+    target_type: targetType,
+    target_id: targetId,
+    title,
+    content,
+    metadata,
+    visibility: 'public',
+  });
+};
 
 export default api;

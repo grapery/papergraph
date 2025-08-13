@@ -58,10 +58,11 @@ func (s *BadgeService) CheckAndAwardBadges(userID uint) error {
 		// 记录获得奖章的活动
 		activity := model.UserActivity{
 			UserID:      userID,
-			ActivityType: "badge",
+			EventType:   model.EventBadgeEarned,
 			TargetID:    userBadge.ID,
-			TargetType:  "badge",
-			Content:     "获得了奖章：" + badge.Name,
+			TargetType:  model.TargetBadge,
+			Title:       "获得了奖章：" + badge.Name,
+			Content:     badge.Description,
 			CreatedAt:   time.Now(),
 		}
 		
@@ -213,12 +214,13 @@ func (s *BadgeService) AwardSubscriptionBadge(userID uint, productName string) e
 	
 	// 记录获得奖章的活动
 	activity := model.UserActivity{
-		UserID:       userID,
-		ActivityType: "badge",
-		TargetID:     userBadge.ID,
-		TargetType:   "badge",
-		Content:      "获得了奖章：" + template.Name,
-		CreatedAt:    time.Now(),
+		UserID:      userID,
+		EventType:   model.EventBadgeEarned,
+		TargetID:    userBadge.ID,
+		TargetType:  model.TargetBadge,
+		Title:       "获得了奖章：" + template.Name,
+		Content:     template.Description,
+		CreatedAt:   time.Now(),
 	}
 	
 	return s.db.Create(&activity).Error

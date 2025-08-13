@@ -81,8 +81,8 @@ export default function EvaluationPage() {
     return '需改进';
   };
 
-  const filteredEvaluations = evaluations.filter(eval => {
-    if (filter === 'my') return eval.author === user?.id;
+  const filteredEvaluations = evaluations.filter(evaluation => {
+    if (filter === 'my') return String(evaluation.author) === String(user?.id);
     return true;
   });
 
@@ -123,7 +123,7 @@ export default function EvaluationPage() {
             </div>
             <p className="text-2xl font-bold text-gray-900">
               {evaluations.length > 0 
-                ? (evaluations.reduce((sum, eval) => sum + eval.overallScore, 0) / evaluations.length).toFixed(1)
+                ? (evaluations.reduce((sum, evaluation) => sum + evaluation.overallScore, 0) / evaluations.length).toFixed(1)
                 : '0.0'
               }
             </p>
@@ -135,7 +135,7 @@ export default function EvaluationPage() {
               <h3 className="font-medium text-gray-900">优秀论文</h3>
             </div>
             <p className="text-2xl font-bold text-gray-900">
-              {evaluations.filter(eval => eval.overallScore >= 4.5).length}
+              {evaluations.filter(evaluation => evaluation.overallScore >= 4.5).length}
             </p>
           </div>
           
@@ -145,7 +145,7 @@ export default function EvaluationPage() {
               <h3 className="font-medium text-gray-900">评价人数</h3>
             </div>
             <p className="text-2xl font-bold text-gray-900">
-              {evaluations.reduce((sum, eval) => sum + eval.evalCount, 0)}
+              {evaluations.reduce((sum, evaluation) => sum + evaluation.evalCount, 0)}
             </p>
           </div>
         </div>
