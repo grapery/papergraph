@@ -175,31 +175,83 @@ export default function PaperUpload() {
   };
 
   const uploadFile = async (fileToUpload: File): Promise<UploadResponse> => {
-    // Note: This is a mock implementation
-    // In real implementation, this would upload to Alibaba Cloud OSS
+    // First, upload the file to get the file URL
     const formData = new FormData();
     formData.append('file', fileToUpload);
 
-    const response = await fetch('/api/upload', {
+    const uploadResponse = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error('Upload failed');
+    if (!uploadResponse.ok) {
+      throw new Error('File upload failed');
     }
 
-    return response.json();
+    const uploadData = await uploadResponse.json();
+    
+    // Then create the article record in the database
+    const articleData = {
+      title: fileToUpload.name.replace(/\.[^/.]+$/, ''), // Remove file extension
+      url: uploadData.data.fileUrl || `file://${fileToUpload.name}`,
+      abstract: '',
+      authors: ['Unknown Author'],
+      publishDate: new Date().toISOString(),
+      publishYear: new Date().getFullYear(),
+      category: 'cs-ai',
+      language: 'zh',
+      fileName: fileToUpload.name,
+      fileSize: fileToUpload.size,
+      fileType: fileToUpload.type,
+    };
+
+    const articleResponse = await fetch('/api/articles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(articleData),
+    });
+
+    if (!articleResponse.ok) {
+      throw new Error('Article creation failed');
+    }
+
+    const articleResult = await articleResponse.json();
+    
+    // Return combined response
+    return {
+      code: 0,
+      message: '上传成功',
+      data: {
+        paper: {
+          id: articleResult.data.id,
+          title: articleResult.data.title,
+          authors: articleResult.data.authors,
+          abstract: articleResult.data.abstract,
+          category: articleResult.data.category,
+          subcategory: '',
+          publishDate: articleResult.data.publishDate,
+          fileSize: articleResult.data.fileSize,
+          fileName: articleResult.data.fileName,
+          uploadDate: articleResult.data.createdAt,
+          status: 'uploaded'
+        },
+        task: {
+          id: Date.now(), // Mock task ID
+          paperId: articleResult.data.id,
+          status: 'processing',
+          type: 'analysis',
+          createdAt: new Date().toISOString(),
+          estimatedTime: 300, // 5 minutes
+          progress: 0
+        }
+      }
+    };
   };
 
   const uploadFromUrl = async (paperUrl: string): Promise<UploadResponse> => {
-    // Note: This is a mock implementation
-    // In real implementation, this would:
-    // 1. Download the file from URL
-    // 2. Validate file format (PDF/Markdown)
-    // 3. Upload to OSS
-    // 4. Process the file
-
+    // First, process the URL to get file info
     const response = await fetch('/api/upload/url', {
       method: 'POST',
       headers: {
@@ -212,7 +264,66 @@ export default function PaperUpload() {
       throw new Error('URL processing failed');
     }
 
-    return response.json();
+    const uploadData = await response.json();
+    
+    // Create the article record in the database
+    const articleData = {
+      title: uploadData.data.title || 'Untitled Paper',
+      url: paperUrl,
+      abstract: uploadData.data.abstract || '',
+      authors: uploadData.data.authors || ['Unknown Author'],
+      publishDate: uploadData.data.publishDate || new Date().toISOString(),
+      publishYear: uploadData.data.publishYear || new Date().getFullYear(),
+      category: uploadData.data.category || 'cs-ai',
+      language: uploadData.data.language || 'en',
+      fileName: uploadData.data.fileName || '',
+      fileSize: uploadData.data.fileSize || 0,
+      fileType: uploadData.data.fileType || '',
+    };
+
+    const articleResponse = await fetch('/api/articles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(articleData),
+    });
+
+    if (!articleResponse.ok) {
+      throw new Error('Article creation failed');
+    }
+
+    const articleResult = await articleResponse.json();
+    
+    // Return combined response
+    return {
+      code: 0,
+      message: '上传成功',
+      data: {
+        paper: {
+          id: articleResult.data.id,
+          title: articleResult.data.title,
+          authors: articleResult.data.authors,
+          abstract: articleResult.data.abstract,
+          category: articleResult.data.category,
+          subcategory: '',
+          publishDate: articleResult.data.publishDate,
+          fileSize: articleResult.data.fileSize,
+          fileName: articleResult.data.fileName,
+          uploadDate: articleResult.data.createdAt,
+          status: 'uploaded'
+        },
+        task: {
+          id: Date.now(), // Mock task ID
+          paperId: articleResult.data.id,
+          status: 'processing',
+          type: 'analysis',
+          createdAt: new Date().toISOString(),
+          estimatedTime: 300, // 5 minutes
+          progress: 0
+        }
+      }
+    };
   };
 
   const resetUpload = () => {

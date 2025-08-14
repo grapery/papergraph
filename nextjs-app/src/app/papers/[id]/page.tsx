@@ -20,10 +20,13 @@ interface Paper {
   id: number;
   title: string;
   authors: string[];
+  authorString: string;
   abstract: string;
   category: string;
-  subcategory: string;
   publishDate: string;
+  publishYear: number;
+  url: string;
+  language: string;
   doi?: string;
   journal?: string;
   volume?: string;
@@ -39,14 +42,25 @@ interface Paper {
     overall: number;
   };
   stats: {
+    views: number;
+    downloads: number;
+    shares: number;
+    citations: number;
     likes: number;
     comments: number;
-    shares: number;
-    views: number;
-    citations: number;
   };
-  tags: string[];
-  references: number;
+  tags: Array<{
+    id: number;
+    name: string;
+    description: string;
+    color: string;
+    category: string;
+    usageCount: number;
+    createdAt: string;
+  }>;
+  fileName?: string;
+  fileSize?: number;
+  fileType?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -62,7 +76,7 @@ export default function PaperDetailPage() {
   useEffect(() => {
     const fetchPaper = async () => {
       try {
-        const response = await fetch(`/api/papers/${params.id}`);
+        const response = await fetch(`/api/articles/${params.id}`);
         if (response.ok) {
           const data = await response.json();
           setPaper(data.data);
@@ -191,12 +205,17 @@ export default function PaperDetailPage() {
               </div>
               
               <div className="flex flex-wrap gap-2 mb-6">
-                {paper.tags.map((tag, index) => (
+                {paper.tags.map((tag) => (
                   <span
-                    key={index}
-                    className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded"
+                    key={tag.id}
+                    className="px-2 py-1 text-xs font-medium rounded"
+                    style={{ 
+                      backgroundColor: tag.color + '20',
+                      color: tag.color,
+                      border: `1px solid ${tag.color}40`
+                    }}
                   >
-                    {tag}
+                    {tag.name}
                   </span>
                 ))}
               </div>

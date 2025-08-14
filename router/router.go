@@ -68,7 +68,7 @@ func InitRouter(subSvc *service.SubscriptionService, badgeSvc *service.BadgeServ
 	auth.PUT("/evaluations/:id", evalHandler.UpdateEvaluation)
 	auth.DELETE("/evaluations/:id", evalHandler.DeleteEvaluation)
 	auth.POST("/evaluations/:id/like", evalHandler.LikeEvaluation)
-	
+
 	// 公开评价接口（无需认证）
 	r.GET("/evaluations/:id", evalHandler.GetEvaluation)
 	r.GET("/papers/:paperId/evaluations", evalHandler.GetEvaluationsByPaper)
@@ -79,7 +79,7 @@ func InitRouter(subSvc *service.SubscriptionService, badgeSvc *service.BadgeServ
 	// 用户活动事件接口
 	activityHandler := handler.NewUserActivityHandler(activitySvc)
 	activityHandler.RegisterRoutes(auth)
-	
+
 	// 公开的用户活动事件接口（无需认证）
 	r.GET("/users/:user_id/activities", activityHandler.GetUserActivities)
 	r.GET("/users/:user_id/activities/stats", activityHandler.GetUserActivityStats)

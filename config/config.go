@@ -35,6 +35,26 @@ type GoogleOAuthConfig struct {
 	RedirectURL  string
 }
 
+// GmailConfig Gmail API配置
+type GmailConfig struct {
+	ClientID     string
+	ClientSecret string
+	RedirectURL  string
+	Scopes       []string
+}
+
+// 全局Gmail配置
+var GmailConf = GmailConfig{
+	ClientID:     "your-gmail-client-id.googleusercontent.com",
+	ClientSecret: "your-gmail-client-secret",
+	RedirectURL:  "http://localhost:8080/auth/gmail/callback",
+	Scopes: []string{
+		"https://www.googleapis.com/auth/gmail.readonly",
+		"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/userinfo.profile",
+	},
+}
+
 // Init 初始化配置和数据库
 func Init() {
 	fmt.Println("配置初始化完成")
@@ -87,6 +107,11 @@ func Init() {
 		&model.EvaluationMetric{},
 		&model.EvaluationComment{},
 		&model.EvaluationLike{},
+		// 邮件相关模型
+		&model.Email{},
+		&model.EmailAnalysis{},
+		&model.EmailDraft{},
+		&model.EmailFilter{},
 	)
 	if err != nil {
 		panic("自动迁移失败: " + err.Error())

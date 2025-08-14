@@ -1,6 +1,9 @@
 package utils
 
 import (
+	"crypto/rand"
+	"encoding/hex"
+	"math/big"
 	"net/http"
 	"time"
 
@@ -56,10 +59,28 @@ func Now() time.Time {
 
 // Pagination 分页信息
 type Pagination struct {
-	Page       int `json:"page"`
-	PageSize   int `json:"page_size"`
+	Page       int   `json:"page"`
+	PageSize   int   `json:"page_size"`
 	Total      int64 `json:"total"`
 	TotalPages int   `json:"total_pages"`
 	HasNext    bool  `json:"has_next"`
 	HasPrev    bool  `json:"has_prev"`
+}
+
+// GenerateRandomString 生成指定长度的随机字符串
+func GenerateRandomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	result := make([]byte, length)
+	for i := range result {
+		num, _ := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		result[i] = charset[num.Int64()]
+	}
+	return string(result)
+}
+
+// GenerateRandomHex 生成指定长度的随机十六进制字符串
+func GenerateRandomHex(length int) string {
+	bytes := make([]byte, length/2)
+	rand.Read(bytes)
+	return hex.EncodeToString(bytes)
 }
