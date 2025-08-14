@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useActivityTracker } from '@/hooks/useActivityTracker';
-import { createActivity, EVENT_TYPES, TARGET_TYPES } from '@/lib/api';
+import { createActivity } from '@/lib/api';
+import { EVENT_TYPES, TARGET_TYPES } from '@/types';
 import { 
   FileText, 
   Upload, 
@@ -297,7 +298,7 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4 text-center">
             <button
-              onClick={() => window.location.href = `/profile/${user.id}`}
+              onClick={() => window.location.href = `/profile/${user?.id}`}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               查看我的活动记录

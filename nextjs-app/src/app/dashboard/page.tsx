@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import AnalysisDashboard from '@/components/AnalysisDashboard';
+import QuickActions from '@/components/QuickActions';
 
 // Mock analysis data
 const mockAnalysis = {
@@ -146,7 +147,14 @@ export default function DashboardPage() {
   const [analysis] = useState(mockAnalysis);
 
   return (
-    <div>
+    <div className="space-y-8">
+      {/* Quick Actions Section */}
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">快速操作</h2>
+        <QuickActions />
+      </div>
+      
+      {/* Analysis Dashboard */}
       <AnalysisDashboard analysis={analysis} />
     </div>
   );

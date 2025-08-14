@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const taskId = formData.get('task_id');
+    // 支持JSON和FormData两种格式
+    let taskId;
+    const contentType = request.headers.get('content-type');
+    
+    if (contentType?.includes('application/json')) {
+      const body = await request.json();
+      taskId = body.task_id;
+    } else {
+      const formData = await request.formData();
+      taskId = formData.get('task_id');
+    }
 
     if (!taskId) {
       return NextResponse.json(

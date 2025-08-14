@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { usePapers } from '@/hooks/useData';
 import { useAuth } from '@/hooks/useAuth';
-import { cn } from '@/lib/utils';
+import { cn, getFieldLabel } from '@/lib/utils';
 import { 
   Heart, 
   MessageCircle, 
@@ -105,10 +105,75 @@ export default function FeedPage() {
 function FeedCard({ paper }: { paper: any }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(paper.stats.likes);
+  const [isSharing, setIsSharing] = useState(false);
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+  const handleLike = async () => {
+    try {
+      const response = await fetch('/api/like', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        },
+        body: JSON.stringify({ task_id: paper.id })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsLiked(!isLiked);
+        setLikeCount(data.data.likeCount || likeCount + 1);
+      }
+    } catch (error) {
+      console.error('Like failed:', error);
+      // 降级到本地状态管理
+      setIsLiked(!isLiked);
+      setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+    }
+  };
+
+  const handleShare = async () => {
+    setIsSharing(true);
+    try {
+      // 调用分享API记录分享次数
+      const response = await fetch('/api/share', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        },
+        body: JSON.stringify({ paper_id: paper.id })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const shareUrl = data.data.shareUrl;
+        
+        // 复制链接到剪贴板
+        await navigator.clipboard.writeText(shareUrl);
+        alert('链接已复制到剪贴板！');
+      } else {
+        // 降级处理：直接复制链接
+        const url = `${window.location.origin}/papers/${paper.id}`;
+        await navigator.clipboard.writeText(url);
+        alert('链接已复制到剪贴板！');
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
+      // 降级处理：直接复制链接
+      try {
+        const url = `${window.location.origin}/papers/${paper.id}`;
+        await navigator.clipboard.writeText(url);
+        alert('链接已复制到剪贴板！');
+      } catch {
+        alert('分享失败，请重试');
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  const handleViewDetails = () => {
+    window.open(`/papers/${paper.id}`, '_blank');
   };
 
   return (
@@ -209,12 +274,19 @@ function FeedCard({ paper }: { paper: any }) {
             <span>{likeCount}</span>
           </button>
           
-          <button className="flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
+          <button
+            onClick={handleShare}
+            disabled={isSharing}
+            className="flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+          >
             <Share2 className="w-4 h-4" />
-            <span>分享</span>
+            <span>{isSharing ? '分享中...' : '分享'}</span>
           </button>
           
-          <button className="px-4 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button
+            onClick={handleViewDetails}
+            className="px-4 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             查看详情
           </button>
         </div>
@@ -223,17 +295,3 @@ function FeedCard({ paper }: { paper: any }) {
   );
 }
 
-function getFieldLabel(field: string): string {
-  const fields: Record<string, string> = {
-    'cs-ai': '人工智能',
-    'cs-system': '计算机系统',
-    'bio-med': '生物医学',
-    'physics': '物理学',
-    'chemistry': '化学',
-    'math': '数学',
-    'economics': '经济学',
-    'env-science': '环境科学',
-    'other': '其他'
-  };
-  return fields[field] || '未设置';
-}

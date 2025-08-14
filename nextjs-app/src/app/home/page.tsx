@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCategories, usePapers } from '@/hooks/useData';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -30,14 +31,37 @@ const viewModes = [
 ];
 
 export default function Homepage() {
+  const router = useRouter();
   const { categories, loading: categoriesLoading } = useCategories();
   const { papers, loading: papersLoading } = usePapers();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedFilter, setSelectedFilter] = useState('trending');
   const [viewMode, setViewMode] = useState('grid');
   const [showFilters, setShowFilters] = useState(false);
+
+  // Handle OAuth callback
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const userParam = urlParams.get('user');
+      
+      if (token && userParam) {
+        try {
+          const userData = JSON.parse(decodeURIComponent(userParam));
+          login(userData, token);
+          
+          // Clean up URL
+          window.history.replaceState({}, '', '/home');
+        } catch (error) {
+          console.error('Failed to parse user data:', error);
+          router.push('/auth?error=invalid_data');
+        }
+      }
+    }
+  }, [login, router]);
 
   const filteredPapers = papers.filter(paper => 
     !selectedCategory || paper.category === selectedCategory

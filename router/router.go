@@ -17,17 +17,22 @@ func InitRouter(subSvc *service.SubscriptionService, badgeSvc *service.BadgeServ
 	r.Static("/assets", "./app/static/assets")               // VUE构建产物的静态资源
 	r.StaticFile("/favicon.ico", "./app/static/favicon.ico") // 网站图标
 
+	// 创建用户服务
+	userService := service.NewUserService(config.DB)
+	authHandler := handler.NewAuthHandler(userService)
+
+	// 认证相关路由（无需认证）
+	r.POST("/api/auth", authHandler.Register)
+	r.POST("/api/auth/login", authHandler.Login)
+	r.POST("/api/forgot-password", authHandler.ForgotPassword)
+
 	// Google登录相关路由
 	r.GET("/login/google", handler.GoogleLoginHandler)
 	r.GET("/auth/google/callback", handler.GoogleCallbackHandler)
 
 	// 受保护的API
 	auth := r.Group("/api", middleware.AuthMiddleware())
-	auth.GET("/me", func(c *gin.Context) {
-		userID, _ := c.Get("user_id")
-		gmail, _ := c.Get("gmail")
-		c.JSON(200, gin.H{"user_id": userID, "gmail": gmail})
-	})
+	auth.GET("/me", authHandler.GetMe)
 	auth.POST("/upload", handler.UploadPaperHandler)
 	auth.POST("/start_analysis", handler.StartAnalysisHandler)
 	auth.GET("/tasks", handler.GetUserTasksHandler)

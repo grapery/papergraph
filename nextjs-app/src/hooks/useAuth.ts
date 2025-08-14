@@ -15,11 +15,23 @@ export const useAuth = () => {
     try {
       setIsCheckingAuth(true);
       const token = localStorage.getItem('auth_token');
-      const mockUser = localStorage.getItem('mock_user');
       
-      if (token && mockUser) {
-        const userData = JSON.parse(mockUser);
-        setUser(userData);
+      if (token) {
+        // Verify token with backend and get user info
+        const response = await fetch('/api/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.data);
+        } else {
+          // Token is invalid, clear it
+          localStorage.removeItem('auth_token');
+          logout();
+        }
       }
     } catch (error) {
       console.error('Error checking auth status:', error);
@@ -61,65 +73,50 @@ export const useUser = (userId: number) => {
       setLoading(true);
       setError(null);
       
-      // Mock data for now
-      const mockUser: User = {
+      // Load user stats from API
+      const [statsResponse, badgesResponse, activitiesResponse] = await Promise.all([
+        fetch(`/api/user/${userId}/stats`),
+        fetch(`/api/user/${userId}/badges`),
+        fetch(`/users/${userId}/activities`),
+      ]);
+      
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        setStats(statsData.data);
+      }
+      
+      if (badgesResponse.ok) {
+        const badgesData = await badgesResponse.json();
+        setBadges(badgesData.data || []);
+      }
+      
+      if (activitiesResponse.ok) {
+        const activitiesData = await activitiesResponse.json();
+        setActivities(activitiesData.data || []);
+      }
+      
+      // For now, create a basic user object since we don't have a dedicated user profile endpoint
+      const basicUser: User = {
         id: userId,
-        name: 'Test User',
-        email: 'test@example.com',
-        institution: 'Test University',
-        position: 'phd',
-        field: 'cs-ai',
-        bio: 'This is a test user bio.',
-        interests: ['Machine Learning', 'AI', 'Computer Vision'],
+        name: 'User ' + userId,
+        email: '',
+        institution: '',
+        position: '',
+        field: '',
+        bio: '',
+        interests: [],
         created_at: new Date().toISOString(),
-        stats: {
-          analyses: 15,
-          followers: 42,
-          following: 28,
-          likes: 156,
-          citations: 89,
-          badges: 8,
-        }
+        stats: stats || {
+          analyses: 0,
+          followers: 0,
+          following: 0,
+          likes: 0,
+          citations: 0,
+          badges: 0,
+        },
       };
       
-      const mockBadges: Badge[] = [
-        {
-          id: 1,
-          name: '首次分析',
-          description: '完成第一次论文分析',
-          type: 'first_analysis',
-          rarity: 'common',
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          name: '分析达人',
-          description: '完成10次论文分析',
-          type: 'analysis_master',
-          rarity: 'rare',
-          created_at: new Date().toISOString(),
-        },
-      ];
-      
-      const mockActivities: Activity[] = [
-        {
-          id: 1,
-          type: 'analysis',
-          content: '分析了论文《深度学习在图像识别中的应用》',
-          created_at: new Date(Date.now() - 3600000).toISOString(),
-        },
-        {
-          id: 2,
-          type: 'like',
-          content: '点赞了论文《自然语言处理的新方法》',
-          created_at: new Date(Date.now() - 7200000).toISOString(),
-        },
-      ];
-      
-      setUser(mockUser);
-      setStats(mockUser.stats || null);
-      setBadges(mockBadges);
-      setActivities(mockActivities);
+      setUser(basicUser);
     } catch (error) {
       setError('Failed to load user data');
       console.error('Error loading user data:', error);

@@ -17,12 +17,15 @@ import {
   Menu,
   X,
   Bell,
-  MessageSquare
+  MessageSquare,
+  Upload,
+  FileSymlink
 } from 'lucide-react';
 
 const navigationItems = [
   { name: '首页', path: '/home', icon: Home },
   { name: '探索', path: '/feed', icon: Search },
+  { name: '上传分析', path: '/upload-analysis', icon: Upload },
   { name: '我的分析', path: '/my-analyses', icon: FileText },
   { name: '评价', path: '/evaluation', icon: BarChart3 },
 ];
@@ -49,23 +52,7 @@ export default function NavBar() {
     return pathname.startsWith(path);
   };
 
-  const handleLogin = () => {
-    // Mock login for development
-    const mockUser = {
-      id: 1,
-      name: 'Test User',
-      email: 'test@example.com',
-      avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1',
-    };
-    
-    const mockToken = 'mock_token_' + Date.now();
-    
-    localStorage.setItem('auth_token', mockToken);
-    localStorage.setItem('mock_user', JSON.stringify(mockUser));
-    
-    window.location.reload();
-  };
-
+  
   const handleLogout = () => {
     logout();
     setShowUserMenu(false);
@@ -194,13 +181,13 @@ export default function NavBar() {
                 </div>
               </>
             ) : (
-              <button
-                onClick={handleLogin}
+              <Link
+                href="/auth"
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 登录
-              </button>
+              </Link>
             )}
             
             {/* Mobile Menu Button */}

@@ -1,4 +1,5 @@
-import { createActivity, EVENT_TYPES, TARGET_TYPES } from '@/lib/api';
+import { createActivity } from '@/lib/api';
+import { EVENT_TYPES, TARGET_TYPES } from '@/types';
 
 /**
  * 用户活动事件记录hook

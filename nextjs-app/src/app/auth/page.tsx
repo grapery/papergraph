@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useAppStore } from '@/store';
 import { cn } from '@/lib/utils';
@@ -13,7 +14,8 @@ import {
   GraduationCap, 
   Eye,
   EyeOff,
-  Chrome
+  Chrome,
+  Github
 } from 'lucide-react';
 
 type AuthMode = 'login' | 'register';
@@ -64,41 +66,42 @@ export default function AuthPage() {
     setError(null);
 
     try {
-      // Mock authentication
-      const mockUser = {
-        id: 1,
-        name: formData.name || 'Test User',
-        email: formData.email || 'test@example.com',
-        institution: formData.institution,
-        position: formData.position,
-        field: formData.field,
-        avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1',
-      };
-      
-      const mockToken = 'mock_token_' + Date.now();
-      
-      login(mockUser, mockToken);
-      router.push('/home');
+      const endpoint = '/api/auth';
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          action: mode === 'login' ? 'login' : 'register'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        login(data.data.user, data.data.token);
+        router.push('/home');
+      } else {
+        setError(data.error || `${mode === 'login' ? '登录' : '注册'}失败，请稍后重试`);
+      }
     } catch (error) {
-      setError('登录失败，请稍后重试');
+      console.error('Auth error:', error);
+      setError('服务器错误，请稍后重试');
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    // Mock Google OAuth
-    const mockUser = {
-      id: 1,
-      name: 'Google User',
-      email: 'user@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=google',
-    };
-    
-    const mockToken = 'mock_google_token_' + Date.now();
-    
-    login(mockUser, mockToken);
-    router.push('/home');
+    // Redirect to Google OAuth
+    window.location.href = '/api/auth/google';
+  };
+
+  const handleGithubLogin = () => {
+    // Redirect to GitHub OAuth
+    window.location.href = '/api/auth/github';
   };
 
   const updateFormData = (field: string, value: string) => {
@@ -275,9 +278,26 @@ export default function AuthPage() {
                     <Chrome className="w-5 h-5" />
                     使用 Google 账户登录
                   </button>
+
+                  <button
+                    onClick={handleGithubLogin}
+                    className="w-full mt-3 bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2"
+                  >
+                    <Github className="w-5 h-5" />
+                    使用 GitHub 账户登录
+                  </button>
                 </div>
 
-                <div className="mt-6 text-center">
+                <div className="mt-6 text-center space-y-2">
+                  {mode === 'login' && (
+                    <Link
+                      href="/forgot-password"
+                      className="block text-sm text-blue-600 hover:text-blue-700"
+                    >
+                      忘记密码？
+                    </Link>
+                  )}
+                  
                   <button
                     onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
                     className="text-blue-600 hover:text-blue-700 font-medium"

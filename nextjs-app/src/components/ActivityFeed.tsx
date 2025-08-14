@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { activityApi, type UserActivity, type ActivityQuery } from '@/lib/api';
+import { activityApi } from '@/lib/api';
+import type { UserActivity, ActivityQuery } from '@/types';
 import { 
   Heart, 
   MessageSquare, 
